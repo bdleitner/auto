@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 
@@ -70,6 +71,13 @@ public class NoOpAdapterWriterTest {
                 .setName("add")
                 .addParameter(ParameterMetadata.of("int", "first"))
                 .addParameter(ParameterMetadata.of("int", "second"))
+                .build())
+        .addAbstractMethod(
+            MethodMetadata.builder()
+                .setVisibility(Visibility.PUBLIC)
+                .setType("void")
+                .setName("modify")
+                .addParameter(ParameterMetadata.of("java.lang.String", "input"))
                 .build())
         .build();
 
@@ -187,7 +195,8 @@ public class NoOpAdapterWriterTest {
     writer.write(type);
 
     URL resource = getClass().getClassLoader().getResource(key);
-    String file = Resources.toString(resource, Charsets.UTF_8);
+    String file = Resources.toString(
+        Preconditions.checkNotNull(resource, "Resource for %s could not be loaded.", key), Charsets.UTF_8);
 
     assertThat(writerMap.get(key).toString()).isEqualTo(file);
   }

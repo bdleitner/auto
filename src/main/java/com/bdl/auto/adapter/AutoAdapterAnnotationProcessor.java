@@ -159,6 +159,9 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
   }
 
   private void collectAllImplementedExecutables(TypeElement type, TypeMetadata.Builder typeBuilder) {
+    if (type.getQualifiedName().toString().equals("java.lang.Object")) {
+      return;
+    }
     messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for implemented methods.", type));
 
     for (Element enclosed : type.getEnclosedElements()) {
