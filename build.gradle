@@ -70,6 +70,6 @@ task copyJars(type: Copy) {
     into '../build/libs'
 }
 
-compileTestJava {
+build {
     dependsOn copyJars
 }

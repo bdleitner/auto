@@ -46,6 +46,7 @@ abstract class TypeMetadata {
   abstract ImmutableList<String> containingClasses();
   abstract Type type();
   abstract String name();
+  abstract ImmutableList<String> typeParameters();
   abstract ImmutableSet<ConstructorMetadata> constructors();
   abstract ImmutableSet<MethodMetadata> abstractMethods();
   abstract ImmutableSet<MethodMetadata> implementedMethods();
@@ -66,6 +67,12 @@ abstract class TypeMetadata {
 
   String decoratedName(String suffix) {
     return String.format("AutoAdapter_%s%s_%s", nesting("_"), name(), suffix);
+  }
+
+  String typeParams() {
+    return typeParameters().isEmpty()
+        ? ""
+        : String.format("<%s>", Joiner.on(", ").join(typeParameters()));
   }
 
   ImmutableList<ConstructorMetadata> orderedRequiredConstructors() {
@@ -113,12 +120,18 @@ abstract class TypeMetadata {
     abstract ImmutableList.Builder<String> containingClassesBuilder();
     abstract Builder type(Type type);
     abstract Builder name(String name);
+    abstract ImmutableList.Builder<String> typeParametersBuilder();
     abstract ImmutableSet.Builder<ConstructorMetadata> constructorsBuilder();
     abstract ImmutableSet.Builder<MethodMetadata> abstractMethodsBuilder();
     abstract ImmutableSet.Builder<MethodMetadata> implementedMethodsBuilder();
 
     Builder nestInside(String className) {
       containingClassesBuilder().add(className);
+      return this;
+    }
+
+    Builder addTypeParameter(String param) {
+      typeParametersBuilder().add(param);
       return this;
     }
 

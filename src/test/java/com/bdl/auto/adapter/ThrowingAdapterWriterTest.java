@@ -77,6 +77,25 @@ public class ThrowingAdapterWriterTest {
   }
 
   @Test
+  public void testParameterized() throws Exception {
+    TypeMetadata type = TypeMetadata.builder()
+        .packageName("com.bdl.auto.adapter")
+        .type(TypeMetadata.Type.INTERFACE)
+        .name("Parameterized")
+        .addTypeParameter("T")
+        .addAbstractMethod(
+            MethodMetadata.builder()
+                .setVisibility(Visibility.PUBLIC)
+                .setType("T")
+                .setName("frozzle")
+                .addParameter(ParameterMetadata.of("T", "input"))
+                .build())
+        .build();
+
+    assertOutput(type);
+  }
+
+  @Test
   public void testHasAnImplementedMethod() throws Exception {
     MethodMetadata addMethod = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
