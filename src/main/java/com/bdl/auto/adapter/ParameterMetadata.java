@@ -30,7 +30,7 @@ abstract class ParameterMetadata {
   abstract String name();
 
   static ParameterMetadata of(String type, String name) {
-    return new AutoValue_ParameterMetadata(type, name);
+    return new AutoValue_ParameterMetadata(TypeUtil.normalize(type), name);
   }
 
   @Override

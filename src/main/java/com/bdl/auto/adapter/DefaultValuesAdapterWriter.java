@@ -43,6 +43,13 @@ class DefaultValuesAdapterWriter extends AbstractAdapterWriter {
       case "java.lang.Short":
       case "java.lang.Byte":
       case "java.lang.Character":
+      case "Integer":
+      case "Long":
+      case "Double":
+      case "Float":
+      case "Short":
+      case "Byte":
+      case "Character":
       case "int":
       case "long":
       case "double":
@@ -51,8 +58,10 @@ class DefaultValuesAdapterWriter extends AbstractAdapterWriter {
       case "byte":
       case "char":
         return "0";
+      case "String":
       case "java.lang.String":
         return "\"\"";
+      case "Boolean":
       case "java.lang.Boolean":
       case "boolean":
         return "false";

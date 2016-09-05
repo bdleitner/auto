@@ -74,6 +74,12 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
       return this;
     }
 
-    abstract MethodMetadata build();
+    abstract String type();
+    abstract MethodMetadata autoBuild();
+
+    MethodMetadata build() {
+      setType(TypeUtil.normalize(type()));
+      return autoBuild();
+    }
   }
 }

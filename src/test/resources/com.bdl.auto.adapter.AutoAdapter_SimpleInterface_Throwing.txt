@@ -1,6 +1,9 @@
 package com.bdl.auto.adapter;
 
+import javax.annotation.Generated;
+
 /** Throwing AutoAdapter Generated class for SimpleInterface. */
+@Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
 public class AutoAdapter_SimpleInterface_Throwing implements SimpleInterface {
 
   @Override

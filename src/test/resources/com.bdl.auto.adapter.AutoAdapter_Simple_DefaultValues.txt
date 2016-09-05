@@ -1,6 +1,9 @@
 package com.bdl.auto.adapter;
 
+import javax.annotation.Generated;
+
 /** DefaultValues AutoAdapter Generated class for Simple. */
+@Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
 public class AutoAdapter_Simple_DefaultValues extends Simple {
 
   @Override
@@ -14,7 +17,7 @@ public class AutoAdapter_Simple_DefaultValues extends Simple {
   }
 
   @Override
-  public java.lang.String repeat(java.lang.String template, int times) {
+  public String repeat(String template, int times) {
     return "";
   }
 }

@@ -42,9 +42,9 @@ public class DefaultValuesAdapterWriterTest {
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
-                .setType("java.lang.String")
+                .setType("String")
                 .setName("repeat")
-                .addParameter(ParameterMetadata.of("java.lang.String", "template"))
+                .addParameter(ParameterMetadata.of("String", "template"))
                 .addParameter(ParameterMetadata.of("int", "times"))
                 .build())
         .addAbstractMethod(
@@ -77,7 +77,7 @@ public class DefaultValuesAdapterWriterTest {
                 .setVisibility(Visibility.PUBLIC)
                 .setType("void")
                 .setName("modify")
-                .addParameter(ParameterMetadata.of("java.lang.String", "input"))
+                .addParameter(ParameterMetadata.of("String", "input"))
                 .build())
         .build();
 
@@ -121,11 +121,11 @@ public class DefaultValuesAdapterWriterTest {
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
             .addParameter(ParameterMetadata.of("int", "arg1"))
-            .addParameter(ParameterMetadata.of("java.lang.String", "arg2"))
+            .addParameter(ParameterMetadata.of("String", "arg2"))
             .build())
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PACKAGE_LOCAL)
-            .addParameter(ParameterMetadata.of("java.lang.String", "arg1"))
+            .addParameter(ParameterMetadata.of("String", "arg1"))
             .build())
         .addAbstractMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
@@ -157,7 +157,7 @@ public class DefaultValuesAdapterWriterTest {
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
             .addParameter(ParameterMetadata.of("int", "arg1"))
-            .addParameter(ParameterMetadata.of("java.lang.String", "arg2"))
+            .addParameter(ParameterMetadata.of("String", "arg2"))
             .build())
         .addAbstractMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)

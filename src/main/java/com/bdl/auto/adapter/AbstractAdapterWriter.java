@@ -42,7 +42,10 @@ abstract class AbstractAdapterWriter {
       throws IOException {
     writeLine(writer, "package %s;", type.packageName());
     writeLine(writer, "");
+    writeLine(writer, "import javax.annotation.Generated;");
+    writeLine(writer, "");
     writeLine(writer, "/** %s AutoAdapter Generated class for %s. */", suffix, type.nestedClassName());
+    writeLine(writer, "@Generated(\"com.bdl.auto.adapter.AutoAdapterProcessor\")");
     writeLine(writer, "public class %s %s %s {",
         type.decoratedName(suffix),
         type.type() == TypeMetadata.Type.CLASS ? "extends" : "implements",

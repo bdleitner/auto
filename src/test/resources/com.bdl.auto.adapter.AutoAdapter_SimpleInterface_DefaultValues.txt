@@ -1,6 +1,9 @@
 package com.bdl.auto.adapter;
 
+import javax.annotation.Generated;
+
 /** DefaultValues AutoAdapter Generated class for SimpleInterface. */
+@Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
 public class AutoAdapter_SimpleInterface_DefaultValues implements SimpleInterface {
 
   @Override
@@ -9,6 +12,6 @@ public class AutoAdapter_SimpleInterface_DefaultValues implements SimpleInterfac
   }
 
   @Override
-  public void modify(java.lang.String input) {
+  public void modify(String input) {
   }
 }

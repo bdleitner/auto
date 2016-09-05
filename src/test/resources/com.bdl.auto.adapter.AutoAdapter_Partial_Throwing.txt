@@ -1,6 +1,9 @@
 package com.bdl.auto.adapter;
 
+import javax.annotation.Generated;
+
 /** Throwing AutoAdapter Generated class for Partial. */
+@Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
 public class AutoAdapter_Partial_Throwing extends Partial {
 
   @Override

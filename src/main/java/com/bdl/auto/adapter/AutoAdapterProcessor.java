@@ -32,7 +32,7 @@ import javax.tools.JavaFileObject;
  */
 @SupportedAnnotationTypes("com.bdl.auto.adapter.AutoAdapter")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
+public class AutoAdapterProcessor extends AbstractProcessor {
 
   private Messager messager;
 
@@ -78,16 +78,6 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
     TypeMetadata typeMetadata = typeBuilder.build();
 
-    messager.printMessage(Diagnostic.Kind.NOTE, "");
-    messager.printMessage(Diagnostic.Kind.NOTE, "");
-    messager.printMessage(Diagnostic.Kind.NOTE, "Messages remaining to implement:");
-    for (MethodMetadata executable : typeMetadata.orderedRequiredMethods()) {
-      messager.printMessage(Diagnostic.Kind.NOTE, "  " + executable.toString());
-    }
-    messager.printMessage(Diagnostic.Kind.NOTE, "");
-    messager.printMessage(Diagnostic.Kind.NOTE, "");
-
-
     try {
       DefaultValuesAdapterWriter notOpWriter = new DefaultValuesAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
       notOpWriter.write(typeMetadata);
@@ -121,16 +111,12 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
         continue;
       }
       ConstructorMetadata constructor = ConstructorMetadata.fromConstructor(enclosed);
-      messager.printMessage(Diagnostic.Kind.NOTE,
-          String.format("Found constructor %s", constructor));
       typeBuilder.addConstructor(constructor);
     }
   }
 
   private void collectAllAbstractExecutables(TypeElement type, TypeMetadata.Builder typeBuilder) {
-    messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for abstract methods.", type));
     if (!type.getModifiers().contains(Modifier.ABSTRACT)) {
-      messager.printMessage(Diagnostic.Kind.NOTE, String.format("Type %s is not abstract, skipping.", type));
       return;
     }
 
@@ -142,7 +128,6 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (executable.getModifiers().contains(Modifier.ABSTRACT)) {
         MethodMetadata method = MethodMetadata.fromMethod(executable);
-        messager.printMessage(Diagnostic.Kind.NOTE, String.format("Found abstract method %s in %s", method, type));
         typeBuilder.addAbstractMethod(method);
       }
     }
@@ -162,7 +147,6 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
     if (type.getQualifiedName().toString().equals("java.lang.Object")) {
       return;
     }
-    messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for implemented methods.", type));
 
     for (Element enclosed : type.getEnclosedElements()) {
       if (enclosed.getKind() != ElementKind.METHOD) {
@@ -172,8 +156,6 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (!executable.getModifiers().contains(Modifier.ABSTRACT)) {
         MethodMetadata method = MethodMetadata.fromMethod(executable);
-        messager.printMessage(Diagnostic.Kind.NOTE,
-            String.format("Found implemented method %s in %s", method, type));
         typeBuilder.addImplementedMethod(method);
       }
     }

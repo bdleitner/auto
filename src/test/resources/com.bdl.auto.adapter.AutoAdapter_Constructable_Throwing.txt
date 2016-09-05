@@ -1,13 +1,16 @@
 package com.bdl.auto.adapter;
 
+import javax.annotation.Generated;
+
 /** Throwing AutoAdapter Generated class for Constructable. */
+@Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
 public class AutoAdapter_Constructable_Throwing extends Constructable {
 
-  public AutoAdapter_Constructable_Throwing(int arg1, java.lang.String arg2) {
+  public AutoAdapter_Constructable_Throwing(int arg1, String arg2) {
     super(arg1, arg2);
   }
 
-  AutoAdapter_Constructable_Throwing(java.lang.String arg1) {
+  AutoAdapter_Constructable_Throwing(String arg1) {
     super(arg1);
   }
 

@@ -30,7 +30,34 @@ be the underscore-separated name of the full class, e.g. `ReallyOuterClass_Outer
 * `[Suffix]` is either `DefaultValues` for the DefaultValue implementation or `Throwing` for the Throwing
  implementation.
 
-## Example Use Cases
+## Examples / Use Cases
+#### Adapter Class
+You've written an interface for which you expect some methods to be frequently implemented with a
+no-op (e.g. various listeners).
+
+    @AutoAdapter
+    public interface SomeInterface {
+      void firstMethod(...);
+      void secondMethod(...);
+      void thirdMethod(...);
+      ...
+      void umpteenthMethod(...);
+    }
+
+Thanks to the `@AutoAdapter` annotation, you can write partial implementations:
+
+    public class PartialImpl extends AutoAdapter_SomeInterface_DefaultValues { // implements SomeInterface
+      void thirdMethod(...) {
+        ... // implementation
+      }
+
+      void seventhMethod(...) {
+        ... // implementation
+      }
+    }
+ 
+and all other methods will simply do nothing when called.
+ 
 #### Testing
 Suppose you're testing your class's interaction with a library interface for which generating an
 instance is nontrivial.  One approach to solve this is to mock the interface with something like
