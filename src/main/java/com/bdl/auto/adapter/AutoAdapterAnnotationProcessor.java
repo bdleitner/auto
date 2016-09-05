@@ -17,6 +17,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -39,7 +40,6 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
     for (Element element : roundEnv.getElementsAnnotatedWith(AutoAdapter.class)) {
       if (element.getKind() != ElementKind.CLASS
           && element.getKind() != ElementKind.INTERFACE) {
@@ -60,13 +60,31 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
   }
 
   private void processElement(TypeElement element) {
-    Set<ExecutableElement> abstractExecutables = Sets.newHashSet();
+    Set<MethodMetadata> abstractExecutables = Sets.newHashSet();
+    collectAllAbstractExecutables(element, abstractExecutables);
 
-    collectAllAbstractExecutablesFromInterface(element, abstractExecutables);
-    collectAllAbstractExecutablesFromClasses(convert(element.getSuperclass()), abstractExecutables);
+    Set<MethodMetadata> implementedExecutables = Sets.newHashSet();
+    collectAllImplementedExecutables(element, implementedExecutables);
+
+    abstractExecutables.removeAll(implementedExecutables);
+
+    messager.printMessage(Diagnostic.Kind.NOTE, "");
+    messager.printMessage(Diagnostic.Kind.NOTE, "");
+    messager.printMessage(Diagnostic.Kind.NOTE, "Messages remaining to implement:");
+    for (MethodMetadata executable : abstractExecutables) {
+      messager.printMessage(Diagnostic.Kind.NOTE, "  " + executable.toString());
+    }
+    messager.printMessage(Diagnostic.Kind.NOTE, "");
+    messager.printMessage(Diagnostic.Kind.NOTE, "");
   }
 
-  private void collectAllAbstractExecutablesFromInterface(TypeElement type, Set<ExecutableElement> executables) {
+  private void collectAllAbstractExecutables(TypeElement type, Set<MethodMetadata> executables) {
+    messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for abstract methods.", type));
+    if (!type.getModifiers().contains(Modifier.ABSTRACT)) {
+      messager.printMessage(Diagnostic.Kind.NOTE, String.format("Type %s is not abstract, skipping.", type));
+      return;
+    }
+
     for (Element enclosed : type.getEnclosedElements()) {
       if (enclosed.getKind() != ElementKind.METHOD) {
         continue;
@@ -74,20 +92,42 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (executable.getModifiers().contains(Modifier.ABSTRACT)) {
-        executables.add(executable);
+        messager.printMessage(Diagnostic.Kind.NOTE, String.format("Found abstract method %s in %s", executable, type));
+        executables.add(MethodMetadata.fromMethod(executable));
       }
     }
 
     for (TypeMirror anInterface : type.getInterfaces()) {
-      collectAllAbstractExecutablesFromInterface(convert(anInterface), executables);
+      collectAllAbstractExecutables(convert(anInterface), executables);
     }
+
+    TypeMirror superclass = type.getSuperclass();
+    if (superclass.getKind() == TypeKind.NONE) {
+      return;
+    }
+    collectAllAbstractExecutables(convert(superclass), executables);
   }
 
-  private void collectAllAbstractExecutablesFromClasses(TypeElement clazz, Set<ExecutableElement> abstractExecutables) {
-    if (clazz.getModifiers().contains(Modifier.ABSTRACT)) {
-      collectAllAbstractExecutablesFromInterface(clazz, abstractExecutables);
+  private void collectAllImplementedExecutables(TypeElement type, Set<MethodMetadata> executables) {
+    messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for implemented methods.", type));
+
+    for (Element enclosed : type.getEnclosedElements()) {
+      if (enclosed.getKind() != ElementKind.METHOD) {
+        continue;
+      }
+
+      ExecutableElement executable = ((ExecutableElement) enclosed);
+      if (!executable.getModifiers().contains(Modifier.ABSTRACT)) {
+        messager.printMessage(Diagnostic.Kind.NOTE,
+            String.format("Found implemented method %s in %s", executable, type));
+        executables.add(MethodMetadata.fromMethod(executable));
+      }
     }
 
-    // TODO: get the next superclass and recurse.  How do we figure out when we're done?
+    TypeMirror superclass = type.getSuperclass();
+    if (superclass.getKind() == TypeKind.NONE) {
+      return;
+    }
+    collectAllImplementedExecutables(convert(superclass), executables);
   }
 }
