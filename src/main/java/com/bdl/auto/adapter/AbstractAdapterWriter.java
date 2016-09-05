@@ -42,11 +42,11 @@ abstract class AbstractAdapterWriter {
       throws IOException {
     writeLine(writer, "package %s;", type.packageName());
     writeLine(writer, "");
-    // TODO: imports
-    writeLine(writer, "/** %s AutoAdapter Generated class for %s. */", suffix, type.name());
-    // TODO: what if the base class is an interface?
+    writeLine(writer, "/** %s AutoAdapter Generated class for %s. */", suffix, type.nestedClassName());
     writeLine(writer, "public class %s %s %s {",
-        type.decoratedName(suffix), type.type() == TypeMetadata.Type.CLASS ? "extends" : "implements", type.name());
+        type.decoratedName(suffix),
+        type.type() == TypeMetadata.Type.CLASS ? "extends" : "implements",
+        type.nestedClassName());
   }
 
   private void writeConstructor(Writer writer, String name, ConstructorMetadata constructor) throws IOException {

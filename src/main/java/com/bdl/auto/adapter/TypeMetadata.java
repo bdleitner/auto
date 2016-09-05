@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.lang.model.element.ElementKind;
+
 /**
  * Metadata class for a relevant parts of a class to write.
  *
@@ -23,7 +25,18 @@ abstract class TypeMetadata {
 
   enum Type {
     CLASS,
-    INTERFACE
+    INTERFACE;
+
+    static Type forKind(ElementKind kind) {
+      switch (kind) {
+        case CLASS:
+          return Type.CLASS;
+        case INTERFACE:
+          return Type.INTERFACE;
+        default:
+          throw new IllegalArgumentException("Bad Kind: " + kind);
+      }
+    }
   }
 
   private ImmutableList<ConstructorMetadata> orderedRequiredConstructors;
@@ -41,6 +54,10 @@ abstract class TypeMetadata {
     return containingClasses().isEmpty()
         ? ""
         : Joiner.on(delimiter).join(Lists.reverse(containingClasses())) + delimiter;
+  }
+
+  String nestedClassName() {
+    return nesting(".") + name();
   }
 
   String fullyQualifiedPathName() {

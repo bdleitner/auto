@@ -138,6 +138,38 @@ public class NoOpAdapterWriterTest {
     assertOutput(type);
   }
 
+  @Test
+  public void testNested() throws Exception {
+    TypeMetadata type = TypeMetadata.builder()
+        .packageName("com.bdl.auto.adapter")
+        .type(TypeMetadata.Type.CLASS)
+        .name("Inner")
+        .nestInside("Outer")
+        .nestInside("Super")
+        .addConstructor(ConstructorMetadata.builder()
+            .visibility(Visibility.PUBLIC)
+            .addParameter(ParameterMetadata.of("int", "arg1"))
+            .addParameter(ParameterMetadata.of("java.lang.String", "arg2"))
+            .build())
+        .addAbstractMethod(MethodMetadata.builder()
+            .setVisibility(Visibility.PUBLIC)
+            .setType("int")
+            .setName("add")
+            .addParameter(ParameterMetadata.of("int", "first"))
+            .addParameter(ParameterMetadata.of("int", "second"))
+            .build())
+        .addAbstractMethod(MethodMetadata.builder()
+            .setVisibility(Visibility.PUBLIC)
+            .setType("int")
+            .setName("subtract")
+            .addParameter(ParameterMetadata.of("int", "first"))
+            .addParameter(ParameterMetadata.of("int", "second"))
+            .build())
+        .build();
+
+    assertOutput(type);
+  }
+
   private void assertOutput(TypeMetadata type) throws Exception {
     final Map<String, Writer> writerMap = Maps.newHashMap();
 

@@ -17,6 +17,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -103,6 +104,7 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
   private void collectBasicMetadata(Element element, TypeMetadata.Builder typeBuilder) {
     typeBuilder.name(element.getSimpleName().toString());
+    typeBuilder.type(TypeMetadata.Type.forKind(element.getKind()));
 
     element = element.getEnclosingElement();
     while (element.getKind() != ElementKind.PACKAGE) {
@@ -110,7 +112,7 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
       element = element.getEnclosingElement();
     }
 
-    typeBuilder.packageName(element.getSimpleName().toString());
+    typeBuilder.packageName(((PackageElement) element).getQualifiedName().toString());
   }
 
   private void collectConstructors(Element element, TypeMetadata.Builder typeBuilder) {
@@ -118,7 +120,7 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
       if (enclosed.getKind() != ElementKind.CONSTRUCTOR) {
         continue;
       }
-      ConstructorMetadata constructor = ConstructorMetadata.fromConstructor(element);
+      ConstructorMetadata constructor = ConstructorMetadata.fromConstructor(enclosed);
       messager.printMessage(Diagnostic.Kind.NOTE,
           String.format("Found constructor %s", constructor));
       typeBuilder.addConstructor(constructor);
