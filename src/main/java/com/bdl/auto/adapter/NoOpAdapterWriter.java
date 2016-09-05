@@ -6,55 +6,25 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * A writer that writes out a no-op implementation of the classes.
+ * A writer that writes out a no-op implementation of the abstract class / interface.
+ * All methods not already implemented will return default values:
+ * <ul>
+ *   <li>All numeric types: 0</li>
+ *   <li>Booleans: false</li>
+ *   <li>Strings: ""</li>
+ *   <li>Everything Else: null</li>
+ * </ul>
  *
  * @author Ben Leitner
  */
-class NoOpAdapterWriter {
-
-  private final Function<String, Writer> writerFunction;
+class NoOpAdapterWriter extends AbstractAdapterWriter {
 
   NoOpAdapterWriter(Function<String, Writer> writerFunction) {
-    this.writerFunction = writerFunction;
+    super(writerFunction, "NoOp");
   }
 
-  void write(TypeMetadata type) throws IOException {
-    Writer writer = writerFunction.apply(
-        String.format("%s.%s", type.packageName(), type.decoratedName("NoOp")));
-
-    writeClassOpening(writer, type);
-
-    for (ConstructorMetadata constructor : type.orderedRequiredConstructors()) {
-      writeConstructor(writer, type.decoratedName("NoOp"), constructor);
-    }
-
-    for (MethodMetadata method : type.orderedRequiredMethods()) {
-      writeMethod(writer, method);
-    }
-    writeClassClosing(writer);
-
-    writer.close();
-  }
-
-  private void writeClassOpening(Writer writer, TypeMetadata type)
-      throws IOException {
-    writeLine(writer, "package %s;", type.packageName());
-    writeLine(writer, "");
-    // TODO: imports
-    writeLine(writer, "/** No-Op AutoAdapter Generated class for %s. */", type.name());
-    // TODO: what if the base class is an interface?
-    writeLine(writer, "public class %s %s %s {",
-        type.decoratedName("NoOp"), type.type() == TypeMetadata.Type.CLASS ? "extends" : "implements", type.name());
-  }
-
-  private void writeConstructor(Writer writer, String name, ConstructorMetadata constructor) throws IOException {
-    writeLine(writer, "");
-    writeLine(writer, "  %s {", constructor.toString(name));
-    writeLine(writer, "    %s;", constructor.superCall());
-    writeLine(writer, "  }");
-  }
-
-  private void writeMethod(Writer writer, MethodMetadata method) throws IOException {
+  @Override
+  protected void writeMethod(Writer writer, MethodMetadata method) throws IOException {
     writeLine(writer, "");
     writeLine(writer, "  @Override");
     writeLine(writer, "  %s {", method);
@@ -64,7 +34,7 @@ class NoOpAdapterWriter {
     writeLine(writer, "  }");
   }
 
-  private String getDefaultReturn(String type) {
+  protected static String getDefaultReturn(String type) {
     switch (type) {
       case "java.lang.Integer":
       case "java.lang.Long":
@@ -89,14 +59,5 @@ class NoOpAdapterWriter {
       default:
         return "null";
     }
-  }
-
-  private void writeClassClosing(Writer writer) throws IOException {
-    writeLine(writer, "}");
-  }
-
-  private void writeLine(Writer writer, String template, Object... params) throws IOException {
-    writer.write(String.format(template, params));
-    writer.write("\n");
   }
 }

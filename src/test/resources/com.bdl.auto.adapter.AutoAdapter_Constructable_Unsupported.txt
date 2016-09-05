@@ -1,0 +1,23 @@
+package com.bdl.auto.adapter;
+
+/** Unsupported AutoAdapter Generated class for Constructable. */
+public class AutoAdapter_Constructable_Unsupported extends Constructable {
+
+  public AutoAdapter_Constructable_Unsupported(int arg1, java.lang.String arg2) {
+    super(arg1, arg2);
+  }
+
+  AutoAdapter_Constructable_Unsupported(java.lang.String arg1) {
+    super(arg1);
+  }
+
+  @Override
+  public int add(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int add(int first, int second)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public int subtract(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int subtract(int first, int second)\" is not supported in this implementation.");
+  }
+}

@@ -1,0 +1,20 @@
+package com.bdl.auto.adapter;
+
+/** Unsupported AutoAdapter Generated class for Simple. */
+public class AutoAdapter_Simple_Unsupported extends Simple {
+
+  @Override
+  public int add(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int add(int first, int second)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public com.bdl.auto.adapter.Thing getThing() {
+    throw new UnsupportedOperationException("The method \"public com.bdl.auto.adapter.Thing getThing()\" is not supported in this implementation.");
+  }
+
+  @Override
+  public java.lang.String repeat(java.lang.String template, int times) {
+    throw new UnsupportedOperationException("The method \"public java.lang.String repeat(java.lang.String template, int times)\" is not supported in this implementation.");
+  }
+}

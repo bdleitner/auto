@@ -1,6 +1,6 @@
 package com.bdl.auto.adapter;
 
-/** No-Op AutoAdapter Generated class for Constructable. */
+/** NoOp AutoAdapter Generated class for Constructable. */
 public class AutoAdapter_Constructable_NoOp extends Constructable {
 
   public AutoAdapter_Constructable_NoOp(int arg1, java.lang.String arg2) {

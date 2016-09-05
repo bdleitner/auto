@@ -1,0 +1,10 @@
+package com.bdl.auto.adapter;
+
+/** Unsupported AutoAdapter Generated class for SimpleInterface. */
+public class AutoAdapter_SimpleInterface_Unsupported implements SimpleInterface {
+
+  @Override
+  public int add(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int add(int first, int second)\" is not supported in this implementation.");
+  }
+}

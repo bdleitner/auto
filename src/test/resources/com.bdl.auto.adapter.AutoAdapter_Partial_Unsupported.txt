@@ -1,0 +1,10 @@
+package com.bdl.auto.adapter;
+
+/** Unsupported AutoAdapter Generated class for Partial. */
+public class AutoAdapter_Partial_Unsupported extends Partial {
+
+  @Override
+  public int subtract(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int subtract(int first, int second)\" is not supported in this implementation.");
+  }
+}

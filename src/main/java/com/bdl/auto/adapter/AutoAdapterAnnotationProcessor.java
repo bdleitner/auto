@@ -63,6 +63,11 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
   }
 
   private void processElement(TypeElement element) {
+    if (!element.getModifiers().contains(Modifier.ABSTRACT)) {
+      messager.printMessage(Diagnostic.Kind.ERROR,
+          String.format("AutoAdapter annotation added to non-abstract class: %s", element));
+      return;
+    }
     TypeMetadata.Builder typeBuilder = TypeMetadata.builder();
     collectBasicMetadata(element, typeBuilder);
     collectConstructors(element, typeBuilder);
@@ -83,8 +88,12 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
 
     try {
-      NoOpAdapterWriter writer = new NoOpAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
-      writer.write(typeMetadata);
+      NoOpAdapterWriter notOpWriter = new NoOpAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
+      notOpWriter.write(typeMetadata);
+
+      UnsupportedAdapterWriter unsupportedWriter = new UnsupportedAdapterWriter(
+          new JavaFileObjectWriterFunction(processingEnv));
+      unsupportedWriter.write(typeMetadata);
     } catch (Exception ex) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,
