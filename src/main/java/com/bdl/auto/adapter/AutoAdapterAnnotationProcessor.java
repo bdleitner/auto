@@ -89,12 +89,12 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
 
     try {
-      NoOpAdapterWriter notOpWriter = new NoOpAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
+      DefaultValuesAdapterWriter notOpWriter = new DefaultValuesAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
       notOpWriter.write(typeMetadata);
 
-      UnsupportedAdapterWriter unsupportedWriter = new UnsupportedAdapterWriter(
+      ThrowingAdapterWriter throwingWriter = new ThrowingAdapterWriter(
           new JavaFileObjectWriterFunction(processingEnv));
-      unsupportedWriter.write(typeMetadata);
+      throwingWriter.write(typeMetadata);
     } catch (Exception ex) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,

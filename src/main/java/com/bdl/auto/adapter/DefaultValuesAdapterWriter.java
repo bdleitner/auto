@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * A writer that writes out a no-op implementation of the abstract class / interface.
+ * A writer that writes out a Default-Values implementation of the abstract class / interface.
  * All methods not already implemented will return default values:
  * <ul>
  *   <li>All numeric types: 0</li>
@@ -17,10 +17,10 @@ import java.io.Writer;
  *
  * @author Ben Leitner
  */
-class NoOpAdapterWriter extends AbstractAdapterWriter {
+class DefaultValuesAdapterWriter extends AbstractAdapterWriter {
 
-  NoOpAdapterWriter(Function<String, Writer> writerFunction) {
-    super(writerFunction, "NoOp");
+  DefaultValuesAdapterWriter(Function<String, Writer> writerFunction) {
+    super(writerFunction, "DefaultValues");
   }
 
   @Override

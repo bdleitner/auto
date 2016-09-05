@@ -1,7 +1,7 @@
 package com.bdl.auto.adapter;
 
-/** Unsupported AutoAdapter Generated class for SimpleInterface. */
-public class AutoAdapter_SimpleInterface_Unsupported implements SimpleInterface {
+/** Throwing AutoAdapter Generated class for SimpleInterface. */
+public class AutoAdapter_SimpleInterface_Throwing implements SimpleInterface {
 
   @Override
   public int add(int first, int second) {

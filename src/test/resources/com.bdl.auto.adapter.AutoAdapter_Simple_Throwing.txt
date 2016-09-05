@@ -1,7 +1,7 @@
 package com.bdl.auto.adapter;
 
-/** Unsupported AutoAdapter Generated class for Simple. */
-public class AutoAdapter_Simple_Unsupported extends Simple {
+/** Throwing AutoAdapter Generated class for Simple. */
+public class AutoAdapter_Simple_Throwing extends Simple {
 
   @Override
   public int add(int first, int second) {

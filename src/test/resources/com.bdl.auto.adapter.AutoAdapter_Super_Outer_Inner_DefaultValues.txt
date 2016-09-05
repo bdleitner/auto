@@ -1,0 +1,19 @@
+package com.bdl.auto.adapter;
+
+/** DefaultValues AutoAdapter Generated class for Super.Outer.Inner. */
+public class AutoAdapter_Super_Outer_Inner_DefaultValues extends Super.Outer.Inner {
+
+  public AutoAdapter_Super_Outer_Inner_DefaultValues(int arg1, java.lang.String arg2) {
+    super(arg1, arg2);
+  }
+
+  @Override
+  public int add(int first, int second) {
+    return 0;
+  }
+
+  @Override
+  public int subtract(int first, int second) {
+    return 0;
+  }
+}

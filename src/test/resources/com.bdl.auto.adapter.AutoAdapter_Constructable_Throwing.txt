@@ -1,13 +1,13 @@
 package com.bdl.auto.adapter;
 
-/** Unsupported AutoAdapter Generated class for Constructable. */
-public class AutoAdapter_Constructable_Unsupported extends Constructable {
+/** Throwing AutoAdapter Generated class for Constructable. */
+public class AutoAdapter_Constructable_Throwing extends Constructable {
 
-  public AutoAdapter_Constructable_Unsupported(int arg1, java.lang.String arg2) {
+  public AutoAdapter_Constructable_Throwing(int arg1, java.lang.String arg2) {
     super(arg1, arg2);
   }
 
-  AutoAdapter_Constructable_Unsupported(java.lang.String arg1) {
+  AutoAdapter_Constructable_Throwing(java.lang.String arg1) {
     super(arg1);
   }
 

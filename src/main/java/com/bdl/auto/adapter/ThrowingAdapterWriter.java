@@ -7,14 +7,14 @@ import java.io.Writer;
 
 /**
  * A writer that writes out a no-op implementation of the abstract class / interface.
- * All methods not already implemented will throw UnsupportedOperationException.
+ * All methods not already implemented will throw ThrowingOperationException.
  *
  * @author Ben Leitner
  */
-class UnsupportedAdapterWriter extends AbstractAdapterWriter {
+class ThrowingAdapterWriter extends AbstractAdapterWriter {
 
-  UnsupportedAdapterWriter(Function<String, Writer> writerFunction) {
-    super(writerFunction, "Unsupported");
+  ThrowingAdapterWriter(Function<String, Writer> writerFunction) {
+    super(writerFunction, "Throwing");
   }
 
   @Override

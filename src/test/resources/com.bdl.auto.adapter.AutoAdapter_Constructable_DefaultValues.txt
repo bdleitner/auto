@@ -1,0 +1,23 @@
+package com.bdl.auto.adapter;
+
+/** DefaultValues AutoAdapter Generated class for Constructable. */
+public class AutoAdapter_Constructable_DefaultValues extends Constructable {
+
+  public AutoAdapter_Constructable_DefaultValues(int arg1, java.lang.String arg2) {
+    super(arg1, arg2);
+  }
+
+  AutoAdapter_Constructable_DefaultValues(java.lang.String arg1) {
+    super(arg1);
+  }
+
+  @Override
+  public int add(int first, int second) {
+    return 0;
+  }
+
+  @Override
+  public int subtract(int first, int second) {
+    return 0;
+  }
+}

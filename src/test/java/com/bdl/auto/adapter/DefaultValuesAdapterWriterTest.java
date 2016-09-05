@@ -18,12 +18,12 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * Tests for the {@linkplain NoOpAdapterWriter} class.
+ * Tests for the {@linkplain DefaultValuesAdapterWriter} class.
  *
  * @author Ben Leitner
  */
 @RunWith(JUnit4.class)
-public class NoOpAdapterWriterTest {
+public class DefaultValuesAdapterWriterTest {
 
   @Test
   public void testSimpleClass() throws Exception {
@@ -181,7 +181,7 @@ public class NoOpAdapterWriterTest {
   private void assertOutput(TypeMetadata type) throws Exception {
     final Map<String, Writer> writerMap = Maps.newHashMap();
 
-    NoOpAdapterWriter writer = new NoOpAdapterWriter(
+    DefaultValuesAdapterWriter writer = new DefaultValuesAdapterWriter(
         new Function<String, Writer>() {
           @Override
           public Writer apply(String input) {
@@ -191,7 +191,7 @@ public class NoOpAdapterWriterTest {
           }
         });
 
-    String key = String.format("%s.%s.txt", type.packageName(), type.decoratedName("NoOp"));
+    String key = String.format("%s.%s.txt", type.packageName(), type.decoratedName("DefaultValues"));
     writer.write(type);
 
     URL resource = getClass().getClassLoader().getResource(key);

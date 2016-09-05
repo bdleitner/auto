@@ -17,12 +17,12 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * Tests for the {@linkplain NoOpAdapterWriter} class.
+ * Tests for the {@linkplain DefaultValuesAdapterWriter} class.
  *
  * @author Ben Leitner
  */
 @RunWith(JUnit4.class)
-public class UnsupportedAdapterWriterTest {
+public class ThrowingAdapterWriterTest {
 
   @Test
   public void testSimpleClass() throws Exception {
@@ -141,7 +141,7 @@ public class UnsupportedAdapterWriterTest {
   private void assertOutput(TypeMetadata type) throws Exception {
     final Map<String, Writer> writerMap = Maps.newHashMap();
 
-    UnsupportedAdapterWriter writer = new UnsupportedAdapterWriter(
+    ThrowingAdapterWriter writer = new ThrowingAdapterWriter(
         new Function<String, Writer>() {
           @Override
           public Writer apply(String input) {
@@ -151,7 +151,7 @@ public class UnsupportedAdapterWriterTest {
           }
         });
 
-    String key = String.format("%s.%s.txt", type.packageName(), type.decoratedName("Unsupported"));
+    String key = String.format("%s.%s.txt", type.packageName(), type.decoratedName("Throwing"));
     writer.write(type);
 
     URL resource = getClass().getClassLoader().getResource(key);
