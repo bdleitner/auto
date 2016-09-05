@@ -1,0 +1,10 @@
+package com.bdl.auto.adapter;
+
+/** No-Op AutoAdapter Generated class for Partial. */
+public class AutoAdapter_Partial_NoOp extends Partial {
+
+  @Override
+  public int subtract(int first, int second) {
+    return 0;
+  }
+}

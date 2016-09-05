@@ -1,0 +1,20 @@
+package com.bdl.auto.adapter;
+
+/** No-Op AutoAdapter Generated class for Simple. */
+public class AutoAdapter_Simple_NoOp extends Simple {
+
+  @Override
+  public int add(int first, int second) {
+    return 0;
+  }
+
+  @Override
+  public com.bdl.auto.adapter.Thing getThing() {
+    return null;
+  }
+
+  @Override
+  public java.lang.String repeat(java.lang.String template, int times) {
+    return "";
+  }
+}

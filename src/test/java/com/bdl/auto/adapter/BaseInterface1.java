@@ -5,5 +5,5 @@ public interface BaseInterface1 extends BaseInterface1Super {
 
   String methodBase1(int input);
 
-  String methodBase1(String first, int second);
+  int methodBase1(String first, int second);
 }

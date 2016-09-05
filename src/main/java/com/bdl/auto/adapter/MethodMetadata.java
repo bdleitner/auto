@@ -3,13 +3,11 @@ package com.bdl.auto.adapter;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
-
-import java.util.Set;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 
 /**
@@ -18,14 +16,7 @@ import javax.lang.model.element.VariableElement;
  * @author Ben Leitner
  */
 @AutoValue
-abstract class MethodMetadata {
-
-  enum Visibility {
-    PUBLIC,
-    PROTECTED,
-    PACKAGE_LOCAL,
-    PRIVATE
-  }
+abstract class MethodMetadata implements Comparable<MethodMetadata> {
 
   abstract Visibility visibility();
   abstract String name();
@@ -42,7 +33,7 @@ abstract class MethodMetadata {
     Preconditions.checkArgument(element.getKind() == ElementKind.METHOD,
         "Element %s is not a method.", element);
     Builder metadata = builder()
-        .setVisibility(getVisibility(element))
+        .setVisibility(Visibility.forElement(element))
         .setType(element.getReturnType().toString())
         .setName(element.getSimpleName().toString());
 
@@ -56,31 +47,19 @@ abstract class MethodMetadata {
     return metadata.build();
   }
 
-  private static Visibility getVisibility(ExecutableElement element) {
-    Set<Modifier> modifiers = element.getModifiers();
-    if (modifiers.contains(Modifier.PUBLIC)) {
-      return Visibility.PUBLIC;
-    }
-    if (modifiers.contains(Modifier.PRIVATE)) {
-      return Visibility.PRIVATE;
-    }
-    if (modifiers.contains(Modifier.PROTECTED)) {
-      return Visibility.PROTECTED;
-    }
-    return Visibility.PACKAGE_LOCAL;
+  @Override
+  public int compareTo(MethodMetadata that) {
+    return ComparisonChain.start()
+        .compare(visibility().ordinal(), that.visibility().ordinal())
+        .compare(name(), that.name())
+        .compare(parameters().size(), that.parameters().size())
+        .compare(parameters(), that.parameters(), ParameterMetadata.IMMUTABLE_LIST_COMPARATOR)
+        .result();
   }
 
   @Override
   public String toString() {
-    StringBuilder s = new StringBuilder();
-    if (visibility() != Visibility.PACKAGE_LOCAL) {
-      s.append(visibility().name().toLowerCase()).append(" ");
-    }
-    s.append(type()).append(" ");
-    s.append(name()).append("(");
-    s.append(Joiner.on(", ").join(parameters()));
-    s.append(")");
-    return s.toString();
+    return String.format("%s%s %s(%s)", visibility().prefix(), type(), name(), Joiner.on(", ").join(parameters()));
   }
 
   @AutoValue.Builder

@@ -1,7 +1,9 @@
 package com.bdl.auto.adapter;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Function;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -20,6 +22,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
 /**
  * Annotation Processor to generate AutoAdapter classes.
@@ -60,25 +63,60 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
   }
 
   private void processElement(TypeElement element) {
-    Set<MethodMetadata> abstractExecutables = Sets.newHashSet();
-    collectAllAbstractExecutables(element, abstractExecutables);
+    TypeMetadata.Builder typeBuilder = TypeMetadata.builder();
+    collectBasicMetadata(element, typeBuilder);
+    collectConstructors(element, typeBuilder);
 
-    Set<MethodMetadata> implementedExecutables = Sets.newHashSet();
-    collectAllImplementedExecutables(element, implementedExecutables);
+    collectAllAbstractExecutables(element, typeBuilder);
+    collectAllImplementedExecutables(element, typeBuilder);
 
-    abstractExecutables.removeAll(implementedExecutables);
+    TypeMetadata typeMetadata = typeBuilder.build();
 
     messager.printMessage(Diagnostic.Kind.NOTE, "");
     messager.printMessage(Diagnostic.Kind.NOTE, "");
     messager.printMessage(Diagnostic.Kind.NOTE, "Messages remaining to implement:");
-    for (MethodMetadata executable : abstractExecutables) {
+    for (MethodMetadata executable : typeMetadata.orderedRequiredMethods()) {
       messager.printMessage(Diagnostic.Kind.NOTE, "  " + executable.toString());
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "");
     messager.printMessage(Diagnostic.Kind.NOTE, "");
+
+
+    try {
+      NoOpAdapterWriter writer = new NoOpAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
+      writer.write(typeMetadata);
+    } catch (Exception ex) {
+      messager.printMessage(
+          Diagnostic.Kind.ERROR,
+          ex.getMessage());
+    }
   }
 
-  private void collectAllAbstractExecutables(TypeElement type, Set<MethodMetadata> executables) {
+  private void collectBasicMetadata(Element element, TypeMetadata.Builder typeBuilder) {
+    typeBuilder.name(element.getSimpleName().toString());
+
+    element = element.getEnclosingElement();
+    while (element.getKind() != ElementKind.PACKAGE) {
+      typeBuilder.nestInside(element.getSimpleName().toString());
+      element = element.getEnclosingElement();
+    }
+
+    typeBuilder.packageName(element.getSimpleName().toString());
+  }
+
+  private void collectConstructors(Element element, TypeMetadata.Builder typeBuilder) {
+    for (Element enclosed : element.getEnclosedElements()) {
+      if (enclosed.getKind() != ElementKind.CONSTRUCTOR) {
+        continue;
+      }
+      ConstructorMetadata constructor = ConstructorMetadata.fromConstructor(element);
+      messager.printMessage(Diagnostic.Kind.NOTE,
+          String.format("Found constructor %s", constructor));
+      typeBuilder.addConstructor(constructor);
+    }
+  }
+
+  private void collectAllAbstractExecutables(TypeElement type, TypeMetadata.Builder typeBuilder) {
     messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for abstract methods.", type));
     if (!type.getModifiers().contains(Modifier.ABSTRACT)) {
       messager.printMessage(Diagnostic.Kind.NOTE, String.format("Type %s is not abstract, skipping.", type));
@@ -92,23 +130,24 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (executable.getModifiers().contains(Modifier.ABSTRACT)) {
-        messager.printMessage(Diagnostic.Kind.NOTE, String.format("Found abstract method %s in %s", executable, type));
-        executables.add(MethodMetadata.fromMethod(executable));
+        MethodMetadata method = MethodMetadata.fromMethod(executable);
+        messager.printMessage(Diagnostic.Kind.NOTE, String.format("Found abstract method %s in %s", method, type));
+        typeBuilder.addAbstractMethod(method);
       }
     }
 
     for (TypeMirror anInterface : type.getInterfaces()) {
-      collectAllAbstractExecutables(convert(anInterface), executables);
+      collectAllAbstractExecutables(convert(anInterface), typeBuilder);
     }
 
     TypeMirror superclass = type.getSuperclass();
     if (superclass.getKind() == TypeKind.NONE) {
       return;
     }
-    collectAllAbstractExecutables(convert(superclass), executables);
+    collectAllAbstractExecutables(convert(superclass), typeBuilder);
   }
 
-  private void collectAllImplementedExecutables(TypeElement type, Set<MethodMetadata> executables) {
+  private void collectAllImplementedExecutables(TypeElement type, TypeMetadata.Builder typeBuilder) {
     messager.printMessage(Diagnostic.Kind.NOTE, String.format("Processing type %s for implemented methods.", type));
 
     for (Element enclosed : type.getEnclosedElements()) {
@@ -118,9 +157,10 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
 
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (!executable.getModifiers().contains(Modifier.ABSTRACT)) {
+        MethodMetadata method = MethodMetadata.fromMethod(executable);
         messager.printMessage(Diagnostic.Kind.NOTE,
-            String.format("Found implemented method %s in %s", executable, type));
-        executables.add(MethodMetadata.fromMethod(executable));
+            String.format("Found implemented method %s in %s", method, type));
+        typeBuilder.addImplementedMethod(method);
       }
     }
 
@@ -128,6 +168,25 @@ public class AutoAdapterAnnotationProcessor extends AbstractProcessor {
     if (superclass.getKind() == TypeKind.NONE) {
       return;
     }
-    collectAllImplementedExecutables(convert(superclass), executables);
+    collectAllImplementedExecutables(convert(superclass), typeBuilder);
+  }
+
+  private static class JavaFileObjectWriterFunction implements Function<String, Writer> {
+
+    private final ProcessingEnvironment env;
+
+    private JavaFileObjectWriterFunction(ProcessingEnvironment env) {
+      this.env = env;
+    }
+
+    @Override
+    public Writer apply(String input) {
+      try {
+        JavaFileObject jfo = env.getFiler().createSourceFile(input);
+        return jfo.openWriter();
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
   }
 }
