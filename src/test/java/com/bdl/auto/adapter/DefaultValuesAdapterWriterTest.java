@@ -27,9 +27,9 @@ public class DefaultValuesAdapterWriterTest {
 
   @Test
   public void testSimpleClass() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Simple")
         .addAbstractMethod(
             MethodMetadata.builder()
@@ -60,9 +60,9 @@ public class DefaultValuesAdapterWriterTest {
 
   @Test
   public void testSimpleInterface() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.INTERFACE)
+        .category(ClassMetadata.Category.INTERFACE)
         .name("SimpleInterface")
         .addAbstractMethod(
             MethodMetadata.builder()
@@ -100,9 +100,9 @@ public class DefaultValuesAdapterWriterTest {
         .addParameter(ParameterMetadata.of("int", "first"))
         .addParameter(ParameterMetadata.of("int", "second"))
         .build();
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Partial")
         .addAbstractMethod(addMethod)
         .addAbstractMethod(subtractMethod)
@@ -114,9 +114,9 @@ public class DefaultValuesAdapterWriterTest {
 
   @Test
   public void testHasConstructors() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Constructable")
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
@@ -148,9 +148,9 @@ public class DefaultValuesAdapterWriterTest {
 
   @Test
   public void testNested() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Inner")
         .nestInside("Outer")
         .nestInside("Super")
@@ -178,7 +178,7 @@ public class DefaultValuesAdapterWriterTest {
     assertOutput(type);
   }
 
-  private void assertOutput(TypeMetadata type) throws Exception {
+  private void assertOutput(ClassMetadata type) throws Exception {
     final Map<String, Writer> writerMap = Maps.newHashMap();
 
     DefaultValuesAdapterWriter writer = new DefaultValuesAdapterWriter(

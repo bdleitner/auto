@@ -70,22 +70,22 @@ public class AutoAdapterProcessor extends AbstractProcessor {
           String.format("AutoAdapter annotation added to non-abstract class: %s", element));
       return;
     }
-    TypeMetadata.Builder typeBuilder = TypeMetadata.builder();
+    ClassMetadata.Builder typeBuilder = ClassMetadata.builder();
     collectBasicMetadata(element, typeBuilder);
     collectConstructors(element, typeBuilder);
 
     collectAllAbstractExecutables(element, typeBuilder);
     collectAllImplementedExecutables(element, typeBuilder);
 
-    TypeMetadata typeMetadata = typeBuilder.build();
+    ClassMetadata classMetadata = typeBuilder.build();
 
     try {
       DefaultValuesAdapterWriter notOpWriter = new DefaultValuesAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
-      notOpWriter.write(typeMetadata);
+      notOpWriter.write(classMetadata);
 
       ThrowingAdapterWriter throwingWriter = new ThrowingAdapterWriter(
           new JavaFileObjectWriterFunction(processingEnv));
-      throwingWriter.write(typeMetadata);
+      throwingWriter.write(classMetadata);
     } catch (Exception ex) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,
@@ -93,12 +93,12 @@ public class AutoAdapterProcessor extends AbstractProcessor {
     }
   }
 
-  private void collectBasicMetadata(Element element, TypeMetadata.Builder typeBuilder) {
+  private void collectBasicMetadata(Element element, ClassMetadata.Builder typeBuilder) {
     typeBuilder.name(element.getSimpleName().toString());
     for (TypeParameterElement param : ((TypeElement) element).getTypeParameters()) {
       typeBuilder.addTypeParameter(TypeParameterMetadata.fromElement(param));
     }
-    typeBuilder.type(TypeMetadata.Type.forKind(element.getKind()));
+    typeBuilder.category(ClassMetadata.Category.forKind(element.getKind()));
 
     element = element.getEnclosingElement();
     while (element.getKind() != ElementKind.PACKAGE) {
@@ -109,7 +109,7 @@ public class AutoAdapterProcessor extends AbstractProcessor {
     typeBuilder.packageName(((PackageElement) element).getQualifiedName().toString());
   }
 
-  private void collectConstructors(Element element, TypeMetadata.Builder typeBuilder) {
+  private void collectConstructors(Element element, ClassMetadata.Builder typeBuilder) {
     for (Element enclosed : element.getEnclosedElements()) {
       if (enclosed.getKind() != ElementKind.CONSTRUCTOR) {
         continue;
@@ -119,7 +119,7 @@ public class AutoAdapterProcessor extends AbstractProcessor {
     }
   }
 
-  private void collectAllAbstractExecutables(TypeElement type, TypeMetadata.Builder typeBuilder) {
+  private void collectAllAbstractExecutables(TypeElement type, ClassMetadata.Builder typeBuilder) {
     if (!type.getModifiers().contains(Modifier.ABSTRACT)) {
       return;
     }
@@ -147,7 +147,7 @@ public class AutoAdapterProcessor extends AbstractProcessor {
     collectAllAbstractExecutables(convert(superclass), typeBuilder);
   }
 
-  private void collectAllImplementedExecutables(TypeElement type, TypeMetadata.Builder typeBuilder) {
+  private void collectAllImplementedExecutables(TypeElement type, ClassMetadata.Builder typeBuilder) {
     if (type.getQualifiedName().toString().equals("java.lang.Object")) {
       return;
     }

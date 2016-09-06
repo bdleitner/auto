@@ -34,6 +34,9 @@ abstract class TypeParameterMetadata {
     Builder builder = builder().setName(element.getSimpleName().toString());
 
     for (TypeMirror type : ((TypeParameterElement) element).getBounds()) {
+      if (type.toString().equals("java.lang.Object")) {
+        continue;
+      }
       builder.addBound(type.toString());
     }
 

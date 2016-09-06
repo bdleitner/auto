@@ -20,7 +20,7 @@ abstract class AbstractAdapterWriter {
     this.suffix = suffix;
   }
 
-  void write(TypeMetadata type) throws IOException {
+  void write(ClassMetadata type) throws IOException {
     Writer writer = writerFunction.apply(
         String.format("%s.%s", type.packageName(), type.decoratedName(suffix)));
 
@@ -38,7 +38,7 @@ abstract class AbstractAdapterWriter {
     writer.close();
   }
 
-  private void writeClassOpening(Writer writer, TypeMetadata type)
+  private void writeClassOpening(Writer writer, ClassMetadata type)
       throws IOException {
     writeLine(writer, "package %s;", type.packageName());
     writeLine(writer, "");
@@ -49,7 +49,7 @@ abstract class AbstractAdapterWriter {
     writeLine(writer, "public class %s%s %s %s%s {",
         type.decoratedName(suffix),
         type.fullTypeParams(),
-        type.type() == TypeMetadata.Type.CLASS ? "extends" : "implements",
+        type.category() == ClassMetadata.Category.CLASS ? "extends" : "implements",
         type.nestedClassName(),
         type.unboundedTypeParams());
   }

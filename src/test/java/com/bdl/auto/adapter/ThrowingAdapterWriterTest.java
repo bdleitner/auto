@@ -26,9 +26,9 @@ public class ThrowingAdapterWriterTest {
 
   @Test
   public void testSimpleClass() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Simple")
         .addAbstractMethod(
             MethodMetadata.builder()
@@ -59,9 +59,9 @@ public class ThrowingAdapterWriterTest {
 
   @Test
   public void testSimpleInterface() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.INTERFACE)
+        .category(ClassMetadata.Category.INTERFACE)
         .name("SimpleInterface")
         .addAbstractMethod(
             MethodMetadata.builder()
@@ -78,9 +78,9 @@ public class ThrowingAdapterWriterTest {
 
   @Test
   public void testParameterized() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.INTERFACE)
+        .category(ClassMetadata.Category.INTERFACE)
         .name("Parameterized")
         .addTypeParameter(TypeParameterMetadata.builder().setName("T").addBound("Foo").build())
         .addAbstractMethod(
@@ -111,9 +111,9 @@ public class ThrowingAdapterWriterTest {
         .addParameter(ParameterMetadata.of("int", "first"))
         .addParameter(ParameterMetadata.of("int", "second"))
         .build();
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Partial")
         .addAbstractMethod(addMethod)
         .addAbstractMethod(subtractMethod)
@@ -125,9 +125,9 @@ public class ThrowingAdapterWriterTest {
 
   @Test
   public void testHasConstructors() throws Exception {
-    TypeMetadata type = TypeMetadata.builder()
+    ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
-        .type(TypeMetadata.Type.CLASS)
+        .category(ClassMetadata.Category.CLASS)
         .name("Constructable")
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
@@ -157,7 +157,7 @@ public class ThrowingAdapterWriterTest {
     assertOutput(type);
   }
 
-  private void assertOutput(TypeMetadata type) throws Exception {
+  private void assertOutput(ClassMetadata type) throws Exception {
     final Map<String, Writer> writerMap = Maps.newHashMap();
 
     ThrowingAdapterWriter writer = new ThrowingAdapterWriter(

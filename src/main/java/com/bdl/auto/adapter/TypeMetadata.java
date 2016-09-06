@@ -3,128 +3,72 @@ package com.bdl.auto.adapter;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.lang.model.element.ElementKind;
-
 /**
- * Metadata class for a relevant parts of a class to write.
+ * Encapsulation of Metadata information for a Type reference.
  *
  * @author Ben Leitner
  */
 @AutoValue
-abstract class TypeMetadata {
+abstract class TypeMetadata implements GeneratesImports {
 
-  enum Type {
-    CLASS,
-    INTERFACE;
+  private ImmutableList<String> imports;
 
-    static Type forKind(ElementKind kind) {
-      switch (kind) {
-        case CLASS:
-          return Type.CLASS;
-        case INTERFACE:
-          return Type.INTERFACE;
-        default:
-          throw new IllegalArgumentException("Bad Kind: " + kind);
-      }
-    }
-  }
-
-  private ImmutableList<ConstructorMetadata> orderedRequiredConstructors;
-  private ImmutableList<MethodMetadata> orderedRequiredMethods;
-
+  /** The package in which the type lives. */
   abstract String packageName();
 
-  abstract ImmutableList<String> containingClasses();
+  /** If {@code true}, the type is a Generic type parameter. */
+  abstract boolean isTypeParameter();
 
-  abstract Type type();
+  /** The names of any outer classes enclosing this type, from innermost to outermost. */
+  abstract ImmutableList<String> outerClassNames();
 
+  /** The name of the type. */
   abstract String name();
 
-  abstract ImmutableList<TypeParameterMetadata> typeParameters();
+  /** Type parameters for a generic type. */
+  abstract ImmutableList<TypeMetadata> params();
 
-  abstract ImmutableSet<ConstructorMetadata> constructors();
-
-  abstract ImmutableSet<MethodMetadata> abstractMethods();
-
-  abstract ImmutableSet<MethodMetadata> implementedMethods();
-
-  private String nesting(String delimiter) {
-    return containingClasses().isEmpty()
-        ? ""
-        : Joiner.on(delimiter).join(Lists.reverse(containingClasses())) + delimiter;
-  }
-
-  String nestedClassName() {
-    return nesting(".") + name();
-  }
+  /** Bounds for a type parameter type. */
+  abstract ImmutableList<TypeMetadata> bounds();
 
   String fullyQualifiedPathName() {
-    return String.format("%s.%s%s", packageName(), nesting("."), name());
+    return nameBuilder()
+        .addPackagePrefix()
+        .addNestingPrefix()
+        .addSimpleName()
+        .toString();
   }
 
-  String decoratedName(String suffix) {
-    return String.format("AutoAdapter_%s%s_%s", nesting("_"), name(), suffix);
+  /** Get a builder to construct a type name. */
+  TypeNameBuilder nameBuilder() {
+    return new TypeNameBuilder();
   }
 
-  String fullTypeParams() {
-    return typeParameters().isEmpty()
-        ? ""
-        : String.format("<%s>", Joiner.on(", ").join(typeParameters()));
-  }
-
-  String unboundedTypeParams() {
-    return typeParameters().isEmpty()
-        ? ""
-        : String.format("<%s>", Joiner.on(", ").join(
-        Iterables.transform(
-            typeParameters(),
-            new Function<TypeParameterMetadata, String>() {
-              @Override
-              public String apply(TypeParameterMetadata input) {
-                return input.name();
-              }
-            })));
-  }
-
-  ImmutableList<ConstructorMetadata> orderedRequiredConstructors() {
-    if (orderedRequiredConstructors == null) {
-      List<ConstructorMetadata> constructors = Lists.newArrayList(Iterables.filter(constructors(),
-          new Predicate<ConstructorMetadata>() {
-            @Override
-            public boolean apply(ConstructorMetadata input) {
-              return input.visibility() != Visibility.PRIVATE;
-            }
-          }));
-      Collections.sort(constructors);
-      // If there is only one constructor and has no parameters, then we don't need it.
-      if (constructors.size() == 1 && constructors.get(0).parameters().size() == 0) {
-        orderedRequiredConstructors = ImmutableList.of();
-      } else {
-        orderedRequiredConstructors = ImmutableList.copyOf(constructors);
+  @Override
+  public ImmutableList<String> getImports() {
+    if (imports == null) {
+      ImmutableSet.Builder<String> allImports = ImmutableSet.builder();
+      for (TypeMetadata param : params()) {
+        allImports.addAll(param.getImports());
       }
-    }
-    return orderedRequiredConstructors;
-  }
+      for (TypeMetadata bound : bounds()) {
+        allImports.addAll(bound.getImports());
+      }
 
-  ImmutableList<MethodMetadata> orderedRequiredMethods() {
-    if (orderedRequiredMethods == null) {
-      ArrayList<MethodMetadata> methods = Lists.newArrayList(
-          Sets.difference(abstractMethods(), implementedMethods()));
-      Collections.sort(methods);
-      orderedRequiredMethods = ImmutableList.copyOf(methods);
+      List<String> importList = Lists.newArrayList(allImports.build());
+      Collections.sort(importList);
+      imports = ImmutableList.copyOf(importList);
     }
-    return orderedRequiredMethods;
+    return imports;
   }
 
   @Override
@@ -132,53 +76,157 @@ abstract class TypeMetadata {
     return fullyQualifiedPathName();
   }
 
-  static Builder builder() {
-    return new AutoValue_TypeMetadata.Builder();
+  @AutoValue.Builder
+  abstract static class Builder {
+    abstract Builder setPackageName(String packageName);
+
+    abstract Builder setIsTypeParameter(boolean isTypeParameter);
+
+    abstract ImmutableList.Builder<String> outerClassNamesBuilder();
+
+    abstract Builder setName(String name);
+
+    abstract ImmutableList.Builder<TypeMetadata> paramsBuilder();
+
+    abstract ImmutableList.Builder<TypeMetadata> boundsBuilder();
+
+    Builder addOuterClass(String className) {
+      setIsTypeParameter(false);
+      outerClassNamesBuilder().add(className);
+      return this;
+    }
+
+    Builder addParam(TypeMetadata metadata) {
+      paramsBuilder().add(metadata);
+      return this;
+    }
+
+    Builder addBound(TypeMetadata metadata) {
+      setIsTypeParameter(true);
+      boundsBuilder().add(metadata);
+      return this;
+    }
+
+    abstract TypeMetadata autoBuild();
+
+    TypeMetadata build() {
+      TypeMetadata metadata = autoBuild();
+      if (metadata.isTypeParameter()) {
+        Preconditions.checkState(metadata.params().isEmpty(),
+            "Type parameters given for type-parameter: %s", metadata);
+        Preconditions.checkState(metadata.outerClassNames().isEmpty(),
+            "Nesting classes given type-parameter: %s", metadata);
+        Preconditions.checkState(metadata.packageName().isEmpty(),
+            "Nonempty package given for type-parameter: %s", metadata);
+      } else {
+        Preconditions.checkState(metadata.bounds().isEmpty(),
+            "Bounds given for non-type-parameter: %s", metadata);
+      }
+      return metadata;
+    }
   }
 
-  @AutoValue.Builder
-  static abstract class Builder {
-    abstract Builder packageName(String packageName);
+  // TODO: Incorporate shorter names if we have imports available.
+  class TypeNameBuilder {
+    private final StringBuilder nameBuilder;
 
-    abstract ImmutableList.Builder<String> containingClassesBuilder();
+    TypeNameBuilder() {
+      nameBuilder = new StringBuilder();
+    }
 
-    abstract Builder type(Type type);
-
-    abstract Builder name(String name);
-
-    abstract ImmutableList.Builder<TypeParameterMetadata> typeParametersBuilder();
-
-    abstract ImmutableSet.Builder<ConstructorMetadata> constructorsBuilder();
-
-    abstract ImmutableSet.Builder<MethodMetadata> abstractMethodsBuilder();
-
-    abstract ImmutableSet.Builder<MethodMetadata> implementedMethodsBuilder();
-
-    Builder nestInside(String className) {
-      containingClassesBuilder().add(className);
+    private TypeNameBuilder addNestingPrefix(String delimiter) {
+      if (!outerClassNames().isEmpty()) {
+        nameBuilder.append(Joiner.on(delimiter).join(Lists.reverse(outerClassNames()))).append(delimiter);
+      }
       return this;
     }
 
-    Builder addTypeParameter(TypeParameterMetadata param) {
-      typeParametersBuilder().add(param);
+    TypeNameBuilder addPackagePrefix() {
+      if (!packageName().isEmpty()) {
+        nameBuilder.append(packageName()).append(".");
+      }
       return this;
     }
 
-    Builder addConstructor(ConstructorMetadata constructor) {
-      constructorsBuilder().add(constructor);
+    TypeNameBuilder addNestingPrefix() {
+      return addNestingPrefix(".");
+    }
+
+    TypeNameBuilder addDecoratedNamePrefix() {
+      return addNestingPrefix("_");
+    }
+
+    TypeNameBuilder addSimpleName() {
+      nameBuilder.append(name());
       return this;
     }
 
-    Builder addAbstractMethod(MethodMetadata method) {
-      abstractMethodsBuilder().add(method);
+    private TypeNameBuilder addParams(Function<TypeMetadata, String> paramsToStrings) {
+      if (!params().isEmpty()) {
+        nameBuilder
+            .append("<")
+            .append(Joiner.on(", ").join(Iterables.transform(params(), paramsToStrings)))
+            .append(">");
+      }
       return this;
     }
 
-    Builder addImplementedMethod(MethodMetadata method) {
-      implementedMethodsBuilder().add(method);
+    TypeNameBuilder addSimpleParams() {
+      return addParams(new Function<TypeMetadata, String>() {
+        @Override
+        public String apply(TypeMetadata param) {
+          return param.nameBuilder()
+              .addPackagePrefix()
+              .addNestingPrefix()
+              .addSimpleName()
+              .addSimpleParams()
+              .toString();
+        }
+      });
+    }
+
+    TypeNameBuilder addFullParams() {
+      return addParams(new Function<TypeMetadata, String>() {
+        @Override
+        public String apply(TypeMetadata param) {
+          return param.nameBuilder()
+              .addPackagePrefix()
+              .addNestingPrefix()
+              .addSimpleName()
+              .addSimpleParams() // Note, there cannot be both simple params and bounds.
+              .addBounds() // as one only applies to type params and one to non-type-params.
+              .toString();
+        }
+      });
+    }
+
+    TypeNameBuilder addBounds() {
+      if (!bounds().isEmpty()) {
+        nameBuilder
+            .append(" extends ")
+            .append(Joiner.on(" & ").join(
+                Iterables.transform(
+                    bounds(),
+                    new Function<TypeMetadata, String>() {
+                      @Override
+                      public String apply(TypeMetadata bound) {
+                        return bound.nameBuilder()
+                            .addPackagePrefix()
+                            .addNestingPrefix()
+                            .addSimpleName()
+                            .addSimpleParams() // Note, there cannot be both simple params and bounds.
+                            .addBounds() // as one only applies to type params and one to non-type-params.
+                            .toString();
+                      }
+                    }
+                )));
+      }
       return this;
     }
 
-    abstract TypeMetadata build();
+    @Override
+    public String toString() {
+      return nameBuilder.toString();
+    }
   }
 }
