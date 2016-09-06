@@ -6,7 +6,7 @@ package com.bdl.auto.adapter;
  * @author Ben Leitner
  */
 @AutoAdapter
-public abstract class FromInterfaces<T> implements Interface1, Interface2<T> {
+public abstract class FromInterfaces<T> implements SimpleInterface, ParameterizedInterface<T> {
 
   @Override
   public void method1B() {

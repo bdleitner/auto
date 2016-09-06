@@ -1,9 +1,9 @@
 package com.bdl.auto.adapter;
 
 /** Simple interface for testing the annotation processor. */
-public interface Interface1 extends Interface1Super {
+public interface ParameterizedInterface<T> {
 
-  int method1A();
+  boolean method2(int input);
 
-  void method1B();
+  T frozzle(T input);
 }

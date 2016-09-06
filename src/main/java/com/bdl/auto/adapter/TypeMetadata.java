@@ -12,6 +12,15 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.QualifiedNameable;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.IntersectionType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+
 /**
  * Encapsulation of Metadata information for a Type reference.
  *
@@ -57,6 +66,10 @@ abstract class TypeMetadata implements GeneratesImports {
   public ImmutableList<String> getImports() {
     if (imports == null) {
       ImmutableSet.Builder<String> allImports = ImmutableSet.builder();
+      if (!isTypeParameter()) {
+        // TODO: Remove Nesting Prefix and force qualifed class names for inner classes?
+        allImports.add(nameBuilder().addPackagePrefix().addNestingPrefix().addSimpleName().toString());
+      }
       for (TypeMetadata param : params()) {
         allImports.addAll(param.getImports());
       }
@@ -71,9 +84,88 @@ abstract class TypeMetadata implements GeneratesImports {
     return imports;
   }
 
-  @Override
-  public String toString() {
-    return fullyQualifiedPathName();
+  String fullDescription() {
+    return nameBuilder()
+        .addPackagePrefix()
+        .addNestingPrefix()
+        .addSimpleName()
+        .addFullParams()
+        .addBounds()
+        .toString();
+  }
+
+  private static String getSimpleName(TypeMirror type) {
+    if (type instanceof DeclaredType) {
+      return ((DeclaredType) type).asElement().getSimpleName().toString();
+    }
+    if (type instanceof TypeVariable) {
+      return ((TypeVariable) type).asElement().getSimpleName().toString();
+    }
+    throw new IllegalArgumentException("Cannot determine name for type: " + type);
+  }
+
+  private static String getQualifiedName(TypeMirror type) {
+    if (type instanceof DeclaredType) {
+      return ((QualifiedNameable) ((DeclaredType) type).asElement()).getQualifiedName().toString();
+    }
+    if (type instanceof TypeVariable) {
+      return ((QualifiedNameable) ((TypeVariable) type).asElement()).getQualifiedName().toString();
+    }
+    throw new IllegalArgumentException("Cannot determine name for type: " + type);
+  }
+
+  private static TypeMetadata fromType(TypeMirror type, boolean withBounds) {
+    Builder builder = builder().setName(getSimpleName(type));
+
+    if (type.getKind() == TypeKind.TYPEVAR) {
+      builder.setIsTypeParameter(true);
+      TypeVariable typeVar = (TypeVariable) type;
+      if (withBounds) {
+        TypeMirror upperBound = typeVar.getUpperBound();
+        if (upperBound instanceof IntersectionType) {
+          for (TypeMirror bound : ((IntersectionType) upperBound).getBounds()) {
+            if (getQualifiedName(bound).equals("java.lang.Object")) {
+              continue;
+            }
+            builder.addBound(fromType(bound, false));
+
+          }
+        } else {
+          if (!getQualifiedName(upperBound).equals("java.lang.Object")) {
+            builder.addBound(fromType(upperBound, false));
+          }
+        }
+      }
+      return builder.build();
+    }
+
+    if (type instanceof DeclaredType) {
+      for (TypeMirror param : ((DeclaredType) type).getTypeArguments()) {
+        builder.addParam(fromType(param, withBounds));
+      }
+      Element enclosingElement = ((DeclaredType) type).asElement().getEnclosingElement();
+      while (enclosingElement.getKind() != ElementKind.PACKAGE) {
+        builder.addOuterClass(enclosingElement.getSimpleName().toString());
+        enclosingElement = enclosingElement.getEnclosingElement();
+      }
+
+      builder.setPackageName(((QualifiedNameable) enclosingElement).getQualifiedName().toString());
+    }
+    return builder.build();
+  }
+
+  static TypeMetadata fromType(TypeMirror type) {
+    return fromType(type, true);
+  }
+
+  static TypeMetadata fromElement(Element element) {
+    return fromType(element.asType(), true);
+  }
+
+  static Builder builder() {
+    return new AutoValue_TypeMetadata.Builder()
+        .setPackageName("")
+        .setIsTypeParameter(false);
   }
 
   @AutoValue.Builder
