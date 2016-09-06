@@ -62,7 +62,7 @@ public class ThrowingAdapterWriterTest {
     ClassMetadata type = ClassMetadata.builder()
         .packageName("com.bdl.auto.adapter")
         .category(ClassMetadata.Category.INTERFACE)
-        .name("SimpleInterface")
+        .name("Simple")
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)

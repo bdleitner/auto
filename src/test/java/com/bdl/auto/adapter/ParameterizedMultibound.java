@@ -5,5 +5,5 @@ package com.bdl.auto.adapter;
  *
  * @author Ben Leitner
  */
-public interface ParameterizedMultiboundInterface<S, T extends SimpleInterface & ParameterizedInterface<S>> {
+public interface ParameterizedMultibound<S, T extends Simple & Parameterized<S>> {
 }

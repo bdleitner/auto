@@ -32,39 +32,39 @@ public class TypeMetadataTest {
 
   @Test
   public void testSimpleInterface() {
-    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.SimpleInterface");
+    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.Simple");
     TypeMetadata type = TypeMetadata.fromElement(element);
     assertThat(type).isEqualTo(
         TypeMetadata.builder()
             .setPackageName("com.bdl.auto.adapter")
-            .setName("SimpleInterface")
+            .setName("Simple")
             .build());
 
     assertThat(type.nameBuilder().addSimpleName().toString())
-        .isEqualTo("SimpleInterface");
+        .isEqualTo("Simple");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.SimpleInterface");
+        .isEqualTo("com.bdl.auto.adapter.Simple");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .addFullParams()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.SimpleInterface");
+        .isEqualTo("com.bdl.auto.adapter.Simple");
   }
 
   @Test
   public void testParameterizedInterface() {
-    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ParameterizedInterface");
+    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.Parameterized");
     TypeMetadata type = TypeMetadata.fromElement(element);
     assertThat(type).isEqualTo(
         TypeMetadata.builder()
             .setPackageName("com.bdl.auto.adapter")
-            .setName("ParameterizedInterface")
+            .setName("Parameterized")
             .addParam(TypeMetadata.builder()
                 .setIsTypeParameter(true)
                 .setName("T")
@@ -72,27 +72,27 @@ public class TypeMetadataTest {
             .build());
 
     assertThat(type.nameBuilder().addSimpleName().toString())
-        .isEqualTo("ParameterizedInterface");
+        .isEqualTo("Parameterized");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.ParameterizedInterface");
+        .isEqualTo("com.bdl.auto.adapter.Parameterized");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .addSimpleParams()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.ParameterizedInterface<T>");
+        .isEqualTo("com.bdl.auto.adapter.Parameterized<T>");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .addFullParams()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.ParameterizedInterface<T>");
+        .isEqualTo("com.bdl.auto.adapter.Parameterized<T>");
   }
 
   @Test
@@ -143,12 +143,12 @@ public class TypeMetadataTest {
 
   @Test
   public void testMultipleParamsMultipleBounds() {
-    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ParameterizedMultiboundInterface");
+    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ParameterizedMultibound");
     TypeMetadata type = TypeMetadata.fromElement(element);
     assertThat(type).isEqualTo(
         TypeMetadata.builder()
             .setPackageName("com.bdl.auto.adapter")
-            .setName("ParameterizedMultiboundInterface")
+            .setName("ParameterizedMultibound")
             .addParam(TypeMetadata.builder()
                 .setIsTypeParameter(true)
                 .setName("S")
@@ -158,11 +158,11 @@ public class TypeMetadataTest {
                 .setName("T")
                 .addBound(TypeMetadata.builder()
                     .setPackageName("com.bdl.auto.adapter")
-                    .setName("SimpleInterface")
+                    .setName("Simple")
                     .build())
                 .addBound(TypeMetadata.builder()
                     .setPackageName("com.bdl.auto.adapter")
-                    .setName("ParameterizedInterface")
+                    .setName("Parameterized")
                     .addParam(TypeMetadata.builder()
                         .setIsTypeParameter(true)
                         .setName("S")
@@ -172,28 +172,28 @@ public class TypeMetadataTest {
             .build());
 
     assertThat(type.nameBuilder().addSimpleName().toString())
-        .isEqualTo("ParameterizedMultiboundInterface");
+        .isEqualTo("ParameterizedMultibound");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.ParameterizedMultiboundInterface");
+        .isEqualTo("com.bdl.auto.adapter.ParameterizedMultibound");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .addSimpleParams()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.ParameterizedMultiboundInterface<S, T>");
+        .isEqualTo("com.bdl.auto.adapter.ParameterizedMultibound<S, T>");
 
     assertThat(type.nameBuilder()
         .addPackagePrefix()
         .addSimpleName()
         .addFullParams()
         .toString())
-        .isEqualTo("com.bdl.auto.adapter.ParameterizedMultiboundInterface"
-            + "<S, T extends com.bdl.auto.adapter.SimpleInterface & com.bdl.auto.adapter.ParameterizedInterface<S>>");
+        .isEqualTo("com.bdl.auto.adapter.ParameterizedMultibound"
+            + "<S, T extends com.bdl.auto.adapter.Simple & com.bdl.auto.adapter.Parameterized<S>>");
   }
 
   @Test
@@ -237,13 +237,13 @@ public class TypeMetadataTest {
 
   @Test
   public void testGenerateImports() {
-    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ParameterizedMultiboundInterface");
+    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ParameterizedMultibound");
     TypeMetadata type = TypeMetadata.fromElement(element);
     assertThat(type.getImports())
         .containsExactly(
-            "com.bdl.auto.adapter.ParameterizedInterface",
-            "com.bdl.auto.adapter.ParameterizedMultiboundInterface",
-            "com.bdl.auto.adapter.SimpleInterface")
+            "com.bdl.auto.adapter.Parameterized",
+            "com.bdl.auto.adapter.ParameterizedMultibound",
+            "com.bdl.auto.adapter.Simple")
         .inOrder();
 
   }
