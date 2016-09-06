@@ -4,7 +4,7 @@ import javax.annotation.Generated;
 
 /** Throwing AutoAdapter Generated class for Parameterized. */
 @Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
-public class AutoAdapter_Parameterized_Throwing<T> implements Parameterized<T> {
+public class AutoAdapter_Parameterized_Throwing<T extends Foo> implements Parameterized<T> {
 
   @Override
   public T frozzle(T input) {

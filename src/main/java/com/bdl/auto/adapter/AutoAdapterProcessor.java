@@ -96,7 +96,7 @@ public class AutoAdapterProcessor extends AbstractProcessor {
   private void collectBasicMetadata(Element element, TypeMetadata.Builder typeBuilder) {
     typeBuilder.name(element.getSimpleName().toString());
     for (TypeParameterElement param : ((TypeElement) element).getTypeParameters()) {
-      typeBuilder.addTypeParameter(param.getSimpleName().toString());
+      typeBuilder.addTypeParameter(TypeParameterMetadata.fromElement(param));
     }
     typeBuilder.type(TypeMetadata.Type.forKind(element.getKind()));
 

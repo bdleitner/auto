@@ -1,6 +1,7 @@
 package com.bdl.auto.adapter;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
@@ -43,12 +44,19 @@ abstract class TypeMetadata {
   private ImmutableList<MethodMetadata> orderedRequiredMethods;
 
   abstract String packageName();
+
   abstract ImmutableList<String> containingClasses();
+
   abstract Type type();
+
   abstract String name();
-  abstract ImmutableList<String> typeParameters();
+
+  abstract ImmutableList<TypeParameterMetadata> typeParameters();
+
   abstract ImmutableSet<ConstructorMetadata> constructors();
+
   abstract ImmutableSet<MethodMetadata> abstractMethods();
+
   abstract ImmutableSet<MethodMetadata> implementedMethods();
 
   private String nesting(String delimiter) {
@@ -69,10 +77,24 @@ abstract class TypeMetadata {
     return String.format("AutoAdapter_%s%s_%s", nesting("_"), name(), suffix);
   }
 
-  String typeParams() {
+  String fullTypeParams() {
     return typeParameters().isEmpty()
         ? ""
         : String.format("<%s>", Joiner.on(", ").join(typeParameters()));
+  }
+
+  String unboundedTypeParams() {
+    return typeParameters().isEmpty()
+        ? ""
+        : String.format("<%s>", Joiner.on(", ").join(
+        Iterables.transform(
+            typeParameters(),
+            new Function<TypeParameterMetadata, String>() {
+              @Override
+              public String apply(TypeParameterMetadata input) {
+                return input.name();
+              }
+            })));
   }
 
   ImmutableList<ConstructorMetadata> orderedRequiredConstructors() {
@@ -117,12 +139,19 @@ abstract class TypeMetadata {
   @AutoValue.Builder
   static abstract class Builder {
     abstract Builder packageName(String packageName);
+
     abstract ImmutableList.Builder<String> containingClassesBuilder();
+
     abstract Builder type(Type type);
+
     abstract Builder name(String name);
-    abstract ImmutableList.Builder<String> typeParametersBuilder();
+
+    abstract ImmutableList.Builder<TypeParameterMetadata> typeParametersBuilder();
+
     abstract ImmutableSet.Builder<ConstructorMetadata> constructorsBuilder();
+
     abstract ImmutableSet.Builder<MethodMetadata> abstractMethodsBuilder();
+
     abstract ImmutableSet.Builder<MethodMetadata> implementedMethodsBuilder();
 
     Builder nestInside(String className) {
@@ -130,7 +159,7 @@ abstract class TypeMetadata {
       return this;
     }
 
-    Builder addTypeParameter(String param) {
+    Builder addTypeParameter(TypeParameterMetadata param) {
       typeParametersBuilder().add(param);
       return this;
     }

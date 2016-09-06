@@ -48,10 +48,10 @@ abstract class AbstractAdapterWriter {
     writeLine(writer, "@Generated(\"com.bdl.auto.adapter.AutoAdapterProcessor\")");
     writeLine(writer, "public class %s%s %s %s%s {",
         type.decoratedName(suffix),
-        type.typeParams(),
+        type.fullTypeParams(),
         type.type() == TypeMetadata.Type.CLASS ? "extends" : "implements",
         type.nestedClassName(),
-        type.typeParams());
+        type.unboundedTypeParams());
   }
 
   private void writeConstructor(Writer writer, String name, ConstructorMetadata constructor) throws IOException {

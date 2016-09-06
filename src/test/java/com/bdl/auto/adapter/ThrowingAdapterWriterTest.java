@@ -82,7 +82,7 @@ public class ThrowingAdapterWriterTest {
         .packageName("com.bdl.auto.adapter")
         .type(TypeMetadata.Type.INTERFACE)
         .name("Parameterized")
-        .addTypeParameter("T")
+        .addTypeParameter(TypeParameterMetadata.builder().setName("T").addBound("Foo").build())
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
