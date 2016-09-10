@@ -17,7 +17,7 @@ public class AutoAdapter_Simple_Throwing extends Simple {
   }
 
   @Override
-  public String repeat(String template, int times) {
-    throw new UnsupportedOperationException("The method \"public String repeat(String template, int times)\" is not supported in this implementation.");
+  public java.lang.String repeat(java.lang.String template, int times) {
+    throw new UnsupportedOperationException("The method \"public java.lang.String repeat(java.lang.String template, int times)\" is not supported in this implementation.");
   }
 }

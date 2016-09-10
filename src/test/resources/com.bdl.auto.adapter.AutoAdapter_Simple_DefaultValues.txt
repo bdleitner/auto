@@ -17,7 +17,7 @@ public class AutoAdapter_Simple_DefaultValues extends Simple {
   }
 
   @Override
-  public String repeat(String template, int times) {
+  public java.lang.String repeat(java.lang.String template, int times) {
     return "";
   }
 }

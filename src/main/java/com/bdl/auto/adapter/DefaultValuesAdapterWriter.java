@@ -28,14 +28,14 @@ class DefaultValuesAdapterWriter extends AbstractAdapterWriter {
     writeLine(writer, "");
     writeLine(writer, "  @Override");
     writeLine(writer, "  %s {", method);
-    if (!method.type().equals("void")) {
+    if (!method.type().name().equals("void")) {
       writeLine(writer, "    return %s;", getDefaultReturn(method.type()));
     }
     writeLine(writer, "  }");
   }
 
-  protected static String getDefaultReturn(String type) {
-    switch (type) {
+  protected static String getDefaultReturn(TypeMetadata type) {
+    switch (type.nameBuilder().addPackagePrefix().addNestingPrefix().addSimpleName().toString()) {
       case "java.lang.Integer":
       case "java.lang.Long":
       case "java.lang.Double":

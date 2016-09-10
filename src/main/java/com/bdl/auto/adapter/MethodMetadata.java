@@ -20,7 +20,7 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
 
   abstract Visibility visibility();
   abstract String name();
-  abstract String type();
+  abstract TypeMetadata type();
   abstract ImmutableList<ParameterMetadata> parameters();
 
   abstract Builder toBuilder();
@@ -34,13 +34,13 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
         "Element %s is not a method.", element);
     Builder metadata = builder()
         .setVisibility(Visibility.forElement(element))
-        .setType(element.getReturnType().toString())
+        .setType(TypeMetadata.fromType(element.getReturnType()))
         .setName(element.getSimpleName().toString());
 
     for (VariableElement parameter : element.getParameters()) {
       metadata.addParameter(
           ParameterMetadata.of(
-              parameter.asType().toString(),
+              TypeMetadata.fromType(parameter.asType()),
               parameter.getSimpleName().toString()));
     }
 
@@ -59,14 +59,23 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
 
   @Override
   public String toString() {
-    return String.format("%s%s %s(%s)", visibility().prefix(), type(), name(), Joiner.on(", ").join(parameters()));
+    return String.format("%s%s %s(%s)",
+        visibility().prefix(),
+        type().nameBuilder()
+            .addPackagePrefix()
+            .addNestingPrefix()
+            .addSimpleName()
+            .addSimpleParams()
+            .toString(),
+        name(),
+        Joiner.on(", ").join(parameters()));
   }
 
   @AutoValue.Builder
   public static abstract class Builder {
     abstract Builder setVisibility(Visibility visibility);
     abstract Builder setName(String name);
-    abstract Builder setType(String Type);
+    abstract Builder setType(TypeMetadata Type);
     abstract ImmutableList.Builder<ParameterMetadata> parametersBuilder();
 
     Builder addParameter(ParameterMetadata parameter) {
@@ -74,12 +83,6 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
       return this;
     }
 
-    abstract String type();
-    abstract MethodMetadata autoBuild();
-
-    MethodMetadata build() {
-      setType(TypeUtil.normalize(type()));
-      return autoBuild();
-    }
+    abstract MethodMetadata build();
   }
 }

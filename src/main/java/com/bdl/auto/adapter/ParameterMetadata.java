@@ -1,7 +1,7 @@
 package com.bdl.auto.adapter;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ComparisonChain;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Comparator;
@@ -14,27 +14,29 @@ import java.util.Comparator;
 @AutoValue
 abstract class ParameterMetadata {
   static final Comparator<ImmutableList<ParameterMetadata>> IMMUTABLE_LIST_COMPARATOR
-      = new Comparator<ImmutableList<ParameterMetadata>>() {
+      = Comparators.forLists(new Function<ParameterMetadata, TypeMetadata>() {
     @Override
-    public int compare(ImmutableList<ParameterMetadata> o1, ImmutableList<ParameterMetadata> o2) {
-      ComparisonChain chain = ComparisonChain.start();
-      chain = chain.compare(o1.size(), o2.size());
-      for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
-        chain = chain.compare(o1.get(i).type(), o2.get(i).type());
-      }
-      return chain.result();
+    public TypeMetadata apply(ParameterMetadata input) {
+      return input.type();
     }
-  };
+  });
 
-  abstract String type();
+  abstract TypeMetadata type();
   abstract String name();
 
-  static ParameterMetadata of(String type, String name) {
-    return new AutoValue_ParameterMetadata(TypeUtil.normalize(type), name);
+  static ParameterMetadata of(TypeMetadata type, String name) {
+    return new AutoValue_ParameterMetadata(type, name);
   }
 
   @Override
   public String toString() {
-    return String.format("%s %s", type(), name());
+    return String.format("%s %s",
+        type().nameBuilder()
+            .addPackagePrefix()
+            .addNestingPrefix()
+            .addSimpleName()
+            .addSimpleParams()
+            .toString(),
+        name());
   }
 }

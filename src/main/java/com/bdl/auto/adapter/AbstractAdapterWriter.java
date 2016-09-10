@@ -22,7 +22,7 @@ abstract class AbstractAdapterWriter {
 
   void write(ClassMetadata type) throws IOException {
     Writer writer = writerFunction.apply(
-        String.format("%s.%s", type.packageName(), type.decoratedName(suffix)));
+        String.format("%s.%s", type.type().packageName(), type.decoratedName(suffix)));
 
     writeClassOpening(writer, type);
 
@@ -40,7 +40,7 @@ abstract class AbstractAdapterWriter {
 
   private void writeClassOpening(Writer writer, ClassMetadata type)
       throws IOException {
-    writeLine(writer, "package %s;", type.packageName());
+    writeLine(writer, "package %s;", type.type().packageName());
     writeLine(writer, "");
     writeLine(writer, "import javax.annotation.Generated;");
     writeLine(writer, "");

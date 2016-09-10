@@ -12,6 +12,6 @@ public class AutoAdapter_SimpleInterface_DefaultValues implements SimpleInterfac
   }
 
   @Override
-  public void modify(String input) {
+  public void modify(java.lang.String input) {
   }
 }

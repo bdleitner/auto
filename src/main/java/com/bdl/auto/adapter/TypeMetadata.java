@@ -4,6 +4,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -17,6 +18,9 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.IntersectionType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.NullType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
@@ -27,7 +31,7 @@ import javax.lang.model.type.TypeVariable;
  * @author Ben Leitner
  */
 @AutoValue
-abstract class TypeMetadata implements GeneratesImports {
+abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata> {
 
   private ImmutableList<String> imports;
 
@@ -49,6 +53,15 @@ abstract class TypeMetadata implements GeneratesImports {
   /** Bounds for a type parameter type. */
   abstract ImmutableList<TypeMetadata> bounds();
 
+  @Override
+  public int compareTo(TypeMetadata that) {
+    return ComparisonChain.start()
+        .compare(name(), that.name())
+        .compare(outerClassNames(), that.outerClassNames(), Comparators.forLists())
+        .compare(packageName(), that.packageName())
+        .result();
+  }
+
   String fullyQualifiedPathName() {
     return nameBuilder()
         .addPackagePrefix()
@@ -67,7 +80,7 @@ abstract class TypeMetadata implements GeneratesImports {
     if (imports == null) {
       ImmutableSet.Builder<String> allImports = ImmutableSet.builder();
       if (!isTypeParameter()) {
-        // TODO: Remove Nesting Prefix and force qualifed class names for inner classes?
+        // TODO: Remove Nesting Prefix and force qualified class names for inner classes?
         allImports.add(nameBuilder().addPackagePrefix().addNestingPrefix().addSimpleName().toString());
       }
       for (TypeMetadata param : params()) {
@@ -101,7 +114,11 @@ abstract class TypeMetadata implements GeneratesImports {
     if (type instanceof TypeVariable) {
       return ((TypeVariable) type).asElement().getSimpleName().toString();
     }
-    throw new IllegalArgumentException("Cannot determine name for type: " + type);
+    if (type instanceof PrimitiveType || type instanceof NoType || type instanceof NullType) {
+      return type.toString();
+    }
+    throw new IllegalArgumentException(String.format("Cannot determine name for type: %s (%s)",
+        type, type.getClass()));
   }
 
   private static String getQualifiedName(TypeMirror type) {
@@ -313,6 +330,11 @@ abstract class TypeMetadata implements GeneratesImports {
                     }
                 )));
       }
+      return this;
+    }
+
+    TypeNameBuilder append(String s) {
+      nameBuilder.append(s);
       return this;
     }
 

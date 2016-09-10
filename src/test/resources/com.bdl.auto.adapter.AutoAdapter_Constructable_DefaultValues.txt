@@ -6,11 +6,11 @@ import javax.annotation.Generated;
 @Generated("com.bdl.auto.adapter.AutoAdapterProcessor")
 public class AutoAdapter_Constructable_DefaultValues extends Constructable {
 
-  public AutoAdapter_Constructable_DefaultValues(int arg1, String arg2) {
+  public AutoAdapter_Constructable_DefaultValues(int arg1, java.lang.String arg2) {
     super(arg1, arg2);
   }
 
-  AutoAdapter_Constructable_DefaultValues(String arg1) {
+  AutoAdapter_Constructable_DefaultValues(java.lang.String arg1) {
     super(arg1);
   }
 

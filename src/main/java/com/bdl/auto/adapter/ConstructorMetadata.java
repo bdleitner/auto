@@ -62,7 +62,7 @@ abstract class ConstructorMetadata implements Comparable<ConstructorMetadata> {
     for (VariableElement parameter : executable.getParameters()) {
       constructor.addParameter(
           ParameterMetadata.of(
-              parameter.asType().toString(),
+              TypeMetadata.fromType(parameter.asType()),
               parameter.getSimpleName().toString()));
     }
 

@@ -1,8 +1,6 @@
 package com.bdl.auto.adapter;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -24,6 +22,7 @@ import javax.lang.model.element.ElementKind;
 @AutoValue
 abstract class ClassMetadata {
 
+  /** Enumeration of the possible types to AudoAdapt: Class and Interface. */
   enum Category {
     CLASS,
     INTERFACE;
@@ -43,15 +42,11 @@ abstract class ClassMetadata {
   private ImmutableList<ConstructorMetadata> orderedRequiredConstructors;
   private ImmutableList<MethodMetadata> orderedRequiredMethods;
 
-  abstract String packageName();
-
-  abstract ImmutableList<String> containingClasses();
-
+  /** The AutoAdaptee's {@link Category}. */
   abstract Category category();
 
-  abstract String name();
-
-  abstract ImmutableList<TypeParameterMetadata> typeParameters();
+  /** Contains the complete type metadata for the class. */
+  abstract TypeMetadata type();
 
   abstract ImmutableSet<ConstructorMetadata> constructors();
 
@@ -59,42 +54,38 @@ abstract class ClassMetadata {
 
   abstract ImmutableSet<MethodMetadata> implementedMethods();
 
-  private String nesting(String delimiter) {
-    return containingClasses().isEmpty()
-        ? ""
-        : Joiner.on(delimiter).join(Lists.reverse(containingClasses())) + delimiter;
-  }
-
   String nestedClassName() {
-    return nesting(".") + name();
+    return type().nameBuilder()
+        .addNestingPrefix()
+        .addSimpleName()
+        .toString();
   }
 
   String fullyQualifiedPathName() {
-    return String.format("%s.%s%s", packageName(), nesting("."), name());
+    return type().nameBuilder()
+        .addPackagePrefix()
+        .addNestingPrefix()
+        .addSimpleName()
+        .toString();
   }
 
   String decoratedName(String suffix) {
-    return String.format("AutoAdapter_%s%s_%s", nesting("_"), name(), suffix);
+    return type()
+        .nameBuilder()
+        .append("AutoAdapter_")
+        .addDecoratedNamePrefix()
+        .addSimpleName()
+        .append("_")
+        .append(suffix)
+        .toString();
   }
 
   String fullTypeParams() {
-    return typeParameters().isEmpty()
-        ? ""
-        : String.format("<%s>", Joiner.on(", ").join(typeParameters()));
+    return type().nameBuilder().addFullParams().toString();
   }
 
   String unboundedTypeParams() {
-    return typeParameters().isEmpty()
-        ? ""
-        : String.format("<%s>", Joiner.on(", ").join(
-        Iterables.transform(
-            typeParameters(),
-            new Function<TypeParameterMetadata, String>() {
-              @Override
-              public String apply(TypeParameterMetadata input) {
-                return input.name();
-              }
-            })));
+    return type().nameBuilder().addSimpleParams().toString();
   }
 
   ImmutableList<ConstructorMetadata> orderedRequiredConstructors() {
@@ -138,31 +129,15 @@ abstract class ClassMetadata {
 
   @AutoValue.Builder
   static abstract class Builder {
-    abstract Builder packageName(String packageName);
+    abstract Builder setCategory(Category category);
 
-    abstract ImmutableList.Builder<String> containingClassesBuilder();
-
-    abstract Builder category(Category category);
-
-    abstract Builder name(String name);
-
-    abstract ImmutableList.Builder<TypeParameterMetadata> typeParametersBuilder();
+    abstract Builder setType(TypeMetadata type);
 
     abstract ImmutableSet.Builder<ConstructorMetadata> constructorsBuilder();
 
     abstract ImmutableSet.Builder<MethodMetadata> abstractMethodsBuilder();
 
     abstract ImmutableSet.Builder<MethodMetadata> implementedMethodsBuilder();
-
-    Builder nestInside(String className) {
-      containingClassesBuilder().add(className);
-      return this;
-    }
-
-    Builder addTypeParameter(TypeParameterMetadata param) {
-      typeParametersBuilder().add(param);
-      return this;
-    }
 
     Builder addConstructor(ConstructorMetadata constructor) {
       constructorsBuilder().add(constructor);

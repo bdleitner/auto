@@ -25,32 +25,50 @@ import java.util.Map;
 @RunWith(JUnit4.class)
 public class DefaultValuesAdapterWriterTest {
 
+  private static final TypeMetadata VOID = TypeMetadata.builder()
+      .setName("void")
+      .build();
+
+  private static final TypeMetadata INT = TypeMetadata.builder()
+      .setName("int")
+      .build();
+  private static final TypeMetadata STRING = TypeMetadata.builder()
+      .setPackageName("java.lang")
+      .setName("String")
+      .build();
+  private static final TypeMetadata THING = TypeMetadata.builder()
+      .setPackageName("com.bdl.auto.adapter")
+      .setName("Thing")
+      .build();
+
   @Test
   public void testSimpleClass() throws Exception {
     ClassMetadata type = ClassMetadata.builder()
-        .packageName("com.bdl.auto.adapter")
-        .category(ClassMetadata.Category.CLASS)
-        .name("Simple")
+        .setCategory(ClassMetadata.Category.CLASS)
+        .setType(TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("Simple")
+            .build())
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
-                .setType("int")
+                .setType(INT)
                 .setName("add")
-                .addParameter(ParameterMetadata.of("int", "first"))
-                .addParameter(ParameterMetadata.of("int", "second"))
+                .addParameter(ParameterMetadata.of(INT, "first"))
+                .addParameter(ParameterMetadata.of(INT, "second"))
                 .build())
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
-                .setType("String")
+                .setType(STRING)
                 .setName("repeat")
-                .addParameter(ParameterMetadata.of("String", "template"))
-                .addParameter(ParameterMetadata.of("int", "times"))
+                .addParameter(ParameterMetadata.of(STRING, "template"))
+                .addParameter(ParameterMetadata.of(INT, "times"))
                 .build())
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
-                .setType("com.bdl.auto.adapter.Thing")
+                .setType(THING)
                 .setName("getThing")
                 .build())
         .build();
@@ -61,23 +79,25 @@ public class DefaultValuesAdapterWriterTest {
   @Test
   public void testSimpleInterface() throws Exception {
     ClassMetadata type = ClassMetadata.builder()
-        .packageName("com.bdl.auto.adapter")
-        .category(ClassMetadata.Category.INTERFACE)
-        .name("Simple")
+        .setCategory(ClassMetadata.Category.INTERFACE)
+        .setType(TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("Simple")
+            .build())
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
-                .setType("int")
+                .setType(INT)
                 .setName("add")
-                .addParameter(ParameterMetadata.of("int", "first"))
-                .addParameter(ParameterMetadata.of("int", "second"))
+                .addParameter(ParameterMetadata.of(INT, "first"))
+                .addParameter(ParameterMetadata.of(INT, "second"))
                 .build())
         .addAbstractMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
-                .setType("void")
+                .setType(VOID)
                 .setName("modify")
-                .addParameter(ParameterMetadata.of("String", "input"))
+                .addParameter(ParameterMetadata.of(STRING, "input"))
                 .build())
         .build();
 
@@ -88,22 +108,24 @@ public class DefaultValuesAdapterWriterTest {
   public void testHasAnImplementedMethod() throws Exception {
     MethodMetadata addMethod = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
-        .setType("int")
+        .setType(INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of("int", "first"))
-        .addParameter(ParameterMetadata.of("int", "second"))
+        .addParameter(ParameterMetadata.of(INT, "first"))
+        .addParameter(ParameterMetadata.of(INT, "second"))
         .build();
     MethodMetadata subtractMethod = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
-        .setType("int")
+        .setType(INT)
         .setName("subtract")
-        .addParameter(ParameterMetadata.of("int", "first"))
-        .addParameter(ParameterMetadata.of("int", "second"))
+        .addParameter(ParameterMetadata.of(INT, "first"))
+        .addParameter(ParameterMetadata.of(INT, "second"))
         .build();
     ClassMetadata type = ClassMetadata.builder()
-        .packageName("com.bdl.auto.adapter")
-        .category(ClassMetadata.Category.CLASS)
-        .name("Partial")
+        .setCategory(ClassMetadata.Category.CLASS)
+        .setType(TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("Partial")
+            .build())
         .addAbstractMethod(addMethod)
         .addAbstractMethod(subtractMethod)
         .addImplementedMethod(addMethod)
@@ -115,31 +137,33 @@ public class DefaultValuesAdapterWriterTest {
   @Test
   public void testHasConstructors() throws Exception {
     ClassMetadata type = ClassMetadata.builder()
-        .packageName("com.bdl.auto.adapter")
-        .category(ClassMetadata.Category.CLASS)
-        .name("Constructable")
+        .setCategory(ClassMetadata.Category.CLASS)
+        .setType(TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("Constructable")
+            .build())
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
-            .addParameter(ParameterMetadata.of("int", "arg1"))
-            .addParameter(ParameterMetadata.of("String", "arg2"))
+            .addParameter(ParameterMetadata.of(INT, "arg1"))
+            .addParameter(ParameterMetadata.of(STRING, "arg2"))
             .build())
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PACKAGE_LOCAL)
-            .addParameter(ParameterMetadata.of("String", "arg1"))
+            .addParameter(ParameterMetadata.of(STRING, "arg1"))
             .build())
         .addAbstractMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
-            .setType("int")
+            .setType(INT)
             .setName("add")
-            .addParameter(ParameterMetadata.of("int", "first"))
-            .addParameter(ParameterMetadata.of("int", "second"))
+            .addParameter(ParameterMetadata.of(INT, "first"))
+            .addParameter(ParameterMetadata.of(INT, "second"))
             .build())
         .addAbstractMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
-            .setType("int")
+            .setType(INT)
             .setName("subtract")
-            .addParameter(ParameterMetadata.of("int", "first"))
-            .addParameter(ParameterMetadata.of("int", "second"))
+            .addParameter(ParameterMetadata.of(INT, "first"))
+            .addParameter(ParameterMetadata.of(INT, "second"))
             .build())
         .build();
 
@@ -149,29 +173,31 @@ public class DefaultValuesAdapterWriterTest {
   @Test
   public void testNested() throws Exception {
     ClassMetadata type = ClassMetadata.builder()
-        .packageName("com.bdl.auto.adapter")
-        .category(ClassMetadata.Category.CLASS)
-        .name("Inner")
-        .nestInside("Outer")
-        .nestInside("Super")
+        .setCategory(ClassMetadata.Category.CLASS)
+        .setType(TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("Inner")
+            .addOuterClass("Outer")
+            .addOuterClass("Super")
+            .build())
         .addConstructor(ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
-            .addParameter(ParameterMetadata.of("int", "arg1"))
-            .addParameter(ParameterMetadata.of("String", "arg2"))
+            .addParameter(ParameterMetadata.of(INT, "arg1"))
+            .addParameter(ParameterMetadata.of(STRING, "arg2"))
             .build())
         .addAbstractMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
-            .setType("int")
+            .setType(INT)
             .setName("add")
-            .addParameter(ParameterMetadata.of("int", "first"))
-            .addParameter(ParameterMetadata.of("int", "second"))
+            .addParameter(ParameterMetadata.of(INT, "first"))
+            .addParameter(ParameterMetadata.of(INT, "second"))
             .build())
         .addAbstractMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
-            .setType("int")
+            .setType(INT)
             .setName("subtract")
-            .addParameter(ParameterMetadata.of("int", "first"))
-            .addParameter(ParameterMetadata.of("int", "second"))
+            .addParameter(ParameterMetadata.of(INT, "first"))
+            .addParameter(ParameterMetadata.of(INT, "second"))
             .build())
         .build();
 
@@ -191,7 +217,7 @@ public class DefaultValuesAdapterWriterTest {
           }
         });
 
-    String key = String.format("%s.%s.txt", type.packageName(), type.decoratedName("DefaultValues"));
+    String key = String.format("%s.%s.txt", type.type().packageName(), type.decoratedName("DefaultValues"));
     writer.write(type);
 
     URL resource = getClass().getClassLoader().getResource(key);
