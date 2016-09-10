@@ -1,5 +1,6 @@
 package com.bdl.auto.adapter;
 
+import static com.bdl.auto.adapter.TypeMetadata.simpleTypeParam;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.testing.compile.CompilationRule;
@@ -59,7 +60,7 @@ public class InheritanceMetadataTest {
     TypeMirror inherited = simpleElement.getInterfaces().get(0);
     InheritanceMetadata actual = InheritanceMetadata.fromType((DeclaredType) inherited);
     assertThat(actual).isEqualTo(InheritanceMetadata.builder()
-        .addInheritanceParam(TypeMetadata.simpleTypeParam("S"))
+        .addInheritanceParam(simpleTypeParam("S"))
         .setType(TypeMetadata.builder()
             .setPackageName("com.bdl.auto.adapter")
             .setName("Parameterized")
@@ -81,6 +82,59 @@ public class InheritanceMetadataTest {
             .setType(TestingTypes.PARAM_S)
             .setName("frozzle")
             .addParameter(ParameterMetadata.of(TestingTypes.PARAM_S, "input"))
+            .build());
+  }
+
+  @Test
+  public void testExtendedParameterizedInheritance() {
+    TypeElement simpleElement = elements.getTypeElement("com.bdl.auto.adapter.ExtendedExtendedParameterized");
+    TypeMirror inherited = simpleElement.getInterfaces().get(0);
+    InheritanceMetadata actual = InheritanceMetadata.fromType((DeclaredType) inherited);
+    assertThat(actual).isEqualTo(InheritanceMetadata.builder()
+        .addInheritanceParam(simpleTypeParam("C"))
+        .setType(TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("ExtendedParameterized")
+            .addParam(simpleTypeParam("S"))
+            .build())
+        .addInheritance(InheritanceMetadata.builder()
+            .addInheritanceParam(simpleTypeParam("S"))
+            .setType(TypeMetadata.builder()
+                .setPackageName("com.bdl.auto.adapter")
+                .setName("Parameterized")
+                .addParam(simpleTypeParam("T"))
+                .build())
+            .addMethod(MethodMetadata.builder()
+                .setVisibility(Visibility.PUBLIC)
+                .setIsAbstract(true)
+                .setType(TestingTypes.PARAM_T)
+                .setName("frozzle")
+                .addParameter(ParameterMetadata.of(TestingTypes.PARAM_T, "input"))
+                .build())
+            .build())
+        .addMethod(MethodMetadata.builder()
+            .setVisibility(Visibility.PUBLIC)
+            .setIsAbstract(true)
+            .setType(TestingTypes.PARAM_S)
+            .setName("extendedFrozzle")
+            .addParameter(ParameterMetadata.of(TestingTypes.PARAM_S, "input"))
+            .build())
+        .build());
+
+    assertThat(actual.getOrderedNeededMethods()).containsExactly(
+        MethodMetadata.builder()
+            .setVisibility(Visibility.PUBLIC)
+            .setIsAbstract(true)
+            .setType(simpleTypeParam("C"))
+            .setName("frozzle")
+            .addParameter(ParameterMetadata.of(simpleTypeParam("C"), "input"))
+            .build(),
+        MethodMetadata.builder()
+            .setVisibility(Visibility.PUBLIC)
+            .setIsAbstract(true)
+            .setType(simpleTypeParam("C"))
+            .setName("extendedFrozzle")
+            .addParameter(ParameterMetadata.of(simpleTypeParam("C"), "input"))
             .build());
   }
 }
