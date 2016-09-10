@@ -1,7 +1,7 @@
 package com.bdl.auto.adapter;
 
 /** Simple interface for testing the annotation processor. */
-public interface Interface1Super {
+public interface SuperSimple {
 
-  String method1Super(Thing input);
+  String thingToString(Thing input);
 }

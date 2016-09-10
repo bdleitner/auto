@@ -23,14 +23,6 @@ import javax.lang.model.util.Elements;
 @RunWith(JUnit4.class)
 public class MethodMetadataTest {
 
-  private static final TypeMetadata INT = TypeMetadata.builder()
-      .setName("int")
-      .build();
-  private static final TypeMetadata STRING = TypeMetadata.builder()
-      .setPackageName("java.lang")
-      .setName("String")
-      .build();
-
   @Rule
   public final CompilationRule compilation = new CompilationRule();
 
@@ -56,18 +48,18 @@ public class MethodMetadataTest {
     MethodMetadata method1 = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(INT)
+        .setType(TestingTypes.INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of(INT, "first"))
-        .addParameter(ParameterMetadata.of(INT, "second"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
         .build();
     MethodMetadata method2 = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(INT)
+        .setType(TestingTypes.INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of(INT, "anInt"))
-        .addParameter(ParameterMetadata.of(INT, "anotherInt"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "anInt"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "anotherInt"))
         .build();
 
     assertThat(method1).isEqualTo(method2);
@@ -80,10 +72,10 @@ public class MethodMetadataTest {
     assertThat(method).isEqualTo(MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(INT)
+        .setType(TestingTypes.INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of(INT, "first"))
-        .addParameter(ParameterMetadata.of(INT, "second"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
         .build());
 
     method = MethodMetadata.fromMethod(
@@ -91,10 +83,10 @@ public class MethodMetadataTest {
     assertThat(method).isEqualTo(MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(STRING)
+        .setType(TestingTypes.STRING)
         .setName("repeat")
-        .addParameter(ParameterMetadata.of(STRING, "template"))
-        .addParameter(ParameterMetadata.of(INT, "times"))
+        .addParameter(ParameterMetadata.of(TestingTypes.STRING, "template"))
+        .addParameter(ParameterMetadata.of(TestingTypes.INT, "times"))
         .build());
   }
 

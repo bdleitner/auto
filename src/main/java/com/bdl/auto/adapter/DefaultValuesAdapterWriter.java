@@ -27,7 +27,7 @@ class DefaultValuesAdapterWriter extends AbstractAdapterWriter {
   protected void writeMethod(Writer writer, MethodMetadata method) throws IOException {
     writeLine(writer, "");
     writeLine(writer, "  @Override");
-    writeLine(writer, "  %s {", method);
+    writeLine(writer, "  %s {", method.fullDescription());
     if (!method.type().name().equals("void")) {
       writeLine(writer, "    return %s;", getDefaultReturn(method.type()));
     }
