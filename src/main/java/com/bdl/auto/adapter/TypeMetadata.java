@@ -6,12 +6,14 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -107,6 +109,66 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
         .toString();
   }
 
+  TypeMetadata convertTypeParams(List<TypeMetadata> newParams) {
+    if (!isTypeParameter()) {
+      Preconditions.checkArgument(newParams.size() == params().size(),
+          "Cannot convert %s to using type params <%s>, the number of params does not match.",
+          fullDescription(),
+          Joiner.on(", ").join(Iterables.transform(newParams, new Function<TypeMetadata, String>() {
+            @Override
+            public String apply(TypeMetadata input) {
+              return input.name();
+            }
+          })));
+      ImmutableMap.Builder<String, String> paramNameMapBuilder = ImmutableMap.builder();
+      int i = 0;
+      for (TypeMetadata param : params()) {
+        paramNameMapBuilder.put(param.name(), newParams.get(i).name());
+        i++;
+      }
+      return convertTypeParams(paramNameMapBuilder.build());
+    } else {
+      Preconditions.checkArgument(newParams.size() == 1,
+          "Cannot convert %s to type params <%s>, exactly 1 type parameter is required.",
+          fullDescription(),
+          Joiner.on(", ").join(Iterables.transform(newParams, new Function<TypeMetadata, String>() {
+            @Override
+            public String apply(TypeMetadata input) {
+              return input.name();
+            }
+          })));
+      return convertTypeParams(ImmutableMap.of(name(), newParams.get(0).name()));
+    }
+  }
+
+  private TypeMetadata convertTypeParams(Map<String, String> paramNameMap) {
+    Builder builder = builder()
+        .setPackageName(packageName())
+        .setIsTypeParameter(isTypeParameter())
+        .setName(name());
+    builder.outerClassNamesBuilder().addAll(outerClassNames());
+
+    if (!isTypeParameter()) {
+      for (TypeMetadata param : params()) {
+        builder.addParam(param.convertTypeParams(paramNameMap));
+      }
+      return builder.build();
+    }
+
+    if (paramNameMap.containsKey(name())) {
+      builder.setName(paramNameMap.get(name()));
+    }
+    for (TypeMetadata bound : bounds()) {
+      builder.addBound(bound.convertTypeParams(paramNameMap));
+    }
+    return builder.build();
+  }
+
+  @Override
+  public String toString() {
+    return fullDescription();
+  }
+
   private static String getSimpleName(TypeMirror type) {
     if (type instanceof DeclaredType) {
       return ((DeclaredType) type).asElement().getSimpleName().toString();
@@ -179,6 +241,10 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
     return fromType(element.asType(), true);
   }
 
+  static TypeMetadata simpleTypeParam(String paramName) {
+    return builder().setIsTypeParameter(true).setName(paramName).build();
+  }
+
   static Builder builder() {
     return new AutoValue_TypeMetadata.Builder()
         .setPackageName("")
@@ -222,14 +288,14 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
       TypeMetadata metadata = autoBuild();
       if (metadata.isTypeParameter()) {
         Preconditions.checkState(metadata.params().isEmpty(),
-            "Type parameters given for type-parameter: %s", metadata);
+            "Type parameters given for type-parameter: %s", metadata.nameBuilder().addSimpleName().addBounds().toString());
         Preconditions.checkState(metadata.outerClassNames().isEmpty(),
-            "Nesting classes given type-parameter: %s", metadata);
+            "Nesting classes given type-parameter: %s", metadata.nameBuilder().addSimpleName().addBounds().toString());
         Preconditions.checkState(metadata.packageName().isEmpty(),
-            "Nonempty package given for type-parameter: %s", metadata);
+            "Nonempty package given for type-parameter: %s", metadata.nameBuilder().addSimpleName().addBounds().toString());
       } else {
         Preconditions.checkState(metadata.bounds().isEmpty(),
-            "Bounds given for non-type-parameter: %s", metadata);
+            "Bounds given for non-type-parameter: %s", metadata.fullDescription());
       }
       return metadata;
     }

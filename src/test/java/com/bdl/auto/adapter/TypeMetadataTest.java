@@ -2,6 +2,7 @@ package com.bdl.auto.adapter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.CompilationRule;
 
 import org.junit.Before;
@@ -246,5 +247,135 @@ public class TypeMetadataTest {
             "com.bdl.auto.adapter.Simple")
         .inOrder();
 
+  }
+
+  @Test
+  public void testComplexParameterization() {
+    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ComplexParameterized");
+    TypeMetadata type = TypeMetadata.fromElement(element);
+    assertThat(type).isEqualTo(
+        TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("ComplexParameterized")
+            .addParam(TypeMetadata.builder()
+                .setIsTypeParameter(true)
+                .setName("X")
+                .build())
+            .addParam(TypeMetadata.builder()
+                .setIsTypeParameter(true)
+                .setName("Y")
+                .addBound(TypeMetadata.builder()
+                    .setPackageName("java.lang")
+                    .setName("Comparable")
+                    .addParam(TypeMetadata.builder()
+                        .setIsTypeParameter(true)
+                        .setName("Y")
+                        .build())
+                    .build())
+                .build())
+            .addParam(TypeMetadata.builder()
+                .setIsTypeParameter(true)
+                .setName("Z")
+                .addBound(TypeMetadata.builder()
+                    .setPackageName("java.util")
+                    .setName("List")
+                    .addParam(TypeMetadata.builder()
+                        .setIsTypeParameter(true)
+                        .setName("Y")
+                        .build())
+                    .build())
+                .build())
+            .build());
+
+    assertThat(type.nameBuilder().addSimpleName().toString())
+        .isEqualTo("ComplexParameterized");
+
+    assertThat(type.nameBuilder()
+        .addPackagePrefix()
+        .addSimpleName()
+        .toString())
+        .isEqualTo("com.bdl.auto.adapter.ComplexParameterized");
+
+    assertThat(type.nameBuilder()
+        .addPackagePrefix()
+        .addSimpleName()
+        .addSimpleParams()
+        .toString())
+        .isEqualTo("com.bdl.auto.adapter.ComplexParameterized<X, Y, Z>");
+
+    assertThat(type.nameBuilder()
+        .addPackagePrefix()
+        .addSimpleName()
+        .addFullParams()
+        .toString())
+        .isEqualTo("com.bdl.auto.adapter.ComplexParameterized<"
+            + "X, Y extends java.lang.Comparable<Y>, Z extends java.util.List<Y>>");
+  }
+
+  @Test
+  public void testTypeConversion() {
+    TypeElement element = elements.getTypeElement("com.bdl.auto.adapter.ComplexParameterized");
+    TypeMetadata type = TypeMetadata.fromElement(element);
+    type = type.convertTypeParams(ImmutableList.of(
+        TypeMetadata.simpleTypeParam("A"),
+        TypeMetadata.simpleTypeParam("B"),
+        TypeMetadata.simpleTypeParam("C")));
+    assertThat(type).isEqualTo(
+        TypeMetadata.builder()
+            .setPackageName("com.bdl.auto.adapter")
+            .setName("ComplexParameterized")
+            .addParam(TypeMetadata.builder()
+                .setIsTypeParameter(true)
+                .setName("A")
+                .build())
+            .addParam(TypeMetadata.builder()
+                .setIsTypeParameter(true)
+                .setName("B")
+                .addBound(TypeMetadata.builder()
+                    .setPackageName("java.lang")
+                    .setName("Comparable")
+                    .addParam(TypeMetadata.builder()
+                        .setIsTypeParameter(true)
+                        .setName("B")
+                        .build())
+                    .build())
+                .build())
+            .addParam(TypeMetadata.builder()
+                .setIsTypeParameter(true)
+                .setName("C")
+                .addBound(TypeMetadata.builder()
+                    .setPackageName("java.util")
+                    .setName("List")
+                    .addParam(TypeMetadata.builder()
+                        .setIsTypeParameter(true)
+                        .setName("B")
+                        .build())
+                    .build())
+                .build())
+            .build());
+
+    assertThat(type.nameBuilder().addSimpleName().toString())
+        .isEqualTo("ComplexParameterized");
+
+    assertThat(type.nameBuilder()
+        .addPackagePrefix()
+        .addSimpleName()
+        .toString())
+        .isEqualTo("com.bdl.auto.adapter.ComplexParameterized");
+
+    assertThat(type.nameBuilder()
+        .addPackagePrefix()
+        .addSimpleName()
+        .addSimpleParams()
+        .toString())
+        .isEqualTo("com.bdl.auto.adapter.ComplexParameterized<A, B, C>");
+
+    assertThat(type.nameBuilder()
+        .addPackagePrefix()
+        .addSimpleName()
+        .addFullParams()
+        .toString())
+        .isEqualTo("com.bdl.auto.adapter.ComplexParameterized<"
+            + "A, B extends java.lang.Comparable<B>, C extends java.util.List<B>>");
   }
 }
