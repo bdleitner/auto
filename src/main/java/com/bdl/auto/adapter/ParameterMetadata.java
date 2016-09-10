@@ -21,11 +21,18 @@ abstract class ParameterMetadata {
     }
   });
 
+  private String name;
+
   abstract TypeMetadata type();
-  abstract String name();
+
+  String name() {
+    return name;
+  }
 
   static ParameterMetadata of(TypeMetadata type, String name) {
-    return new AutoValue_ParameterMetadata(type, name);
+    ParameterMetadata metadata = new AutoValue_ParameterMetadata(type);
+    metadata.name = name;
+    return metadata;
   }
 
   @Override

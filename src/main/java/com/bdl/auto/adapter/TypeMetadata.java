@@ -141,7 +141,7 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
     }
   }
 
-  private TypeMetadata convertTypeParams(Map<String, String> paramNameMap) {
+  TypeMetadata convertTypeParams(Map<String, String> paramNameMap) {
     Builder builder = builder()
         .setPackageName(packageName())
         .setIsTypeParameter(isTypeParameter())
