@@ -132,6 +132,11 @@ abstract class MethodMetadata implements Comparable<MethodMetadata>, GeneratesIm
         Joiner.on(", ").join(parameters()));
   }
 
+  @Override
+  public String toString() {
+    return fullDescription();
+  }
+
   abstract Builder toBuilder();
 
   static Builder builder() {

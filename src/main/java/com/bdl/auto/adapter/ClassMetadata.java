@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -111,7 +112,7 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
         if (method.isAbstract()) {
           neededMethods.add(method);
         } else {
-          neededMethods.remove(method);
+          neededMethods.remove(method.toBuilder().setIsAbstract(true).build());
         }
       }
 
@@ -170,13 +171,23 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
         .setCategory(Category.forKind(element.getKind()))
         .setType(TypeMetadata.fromElement(element));
 
-    for (TypeMirror inherited : ((TypeElement) element).getInterfaces()) {
+    TypeElement typeElement = (TypeElement) element;
+    TypeMirror superClass = typeElement.getSuperclass();
+    if (superClass instanceof DeclaredType
+      && ((DeclaredType) superClass).asElement().getModifiers().contains(Modifier.ABSTRACT)) {
+      metadata.addInheritance(InheritanceMetadata.fromType((DeclaredType) superClass));
+    }
+
+    for (TypeMirror inherited : typeElement.getInterfaces()) {
       metadata.addInheritance(InheritanceMetadata.fromType((DeclaredType) inherited));
     }
 
     for (Element enclosed : element.getEnclosedElements()) {
       if (enclosed.getKind() == ElementKind.METHOD) {
         metadata.addMethod(MethodMetadata.fromMethod((ExecutableElement) enclosed));
+      }
+      if (enclosed.getKind() == ElementKind.CONSTRUCTOR) {
+        metadata.addConstructor(ConstructorMetadata.fromConstructor(enclosed));
       }
     }
     return metadata.build();

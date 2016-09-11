@@ -15,6 +15,10 @@ class TestingTypes {
       .setName("int")
       .build();
 
+  static final TypeMetadata BOOLEAN = TypeMetadata.builder()
+      .setName("boolean")
+      .build();
+
   static final TypeMetadata STRING = TypeMetadata.builder()
       .setPackageName("java.lang")
       .setName("String")

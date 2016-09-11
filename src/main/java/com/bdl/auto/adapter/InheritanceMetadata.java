@@ -84,8 +84,8 @@ abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports
     abstract Builder setClassMetadata(ClassMetadata classMetadata);
 
     Builder addInheritanceParam(TypeMetadata type) {
-      Preconditions.checkArgument(type.isTypeParameter() && type.bounds().isEmpty(),
-          "Inheritance type params must be unbounded type parameters, was %s",
+      Preconditions.checkArgument(type.isTypeParameter(),
+          "Inheritance type params must be type parameters, was %s",
           type.fullDescription());
       inheritanceParamsBuilder().add(type);
       return this;

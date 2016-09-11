@@ -6,8 +6,4 @@ public interface Simple extends SuperSimple {
   int add(int first, int second);
 
   String repeat(String template, int times);
-
-  int method1A();
-
-  void method1B();
 }

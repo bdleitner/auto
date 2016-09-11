@@ -26,8 +26,7 @@ import javax.lang.model.util.Elements;
 @RunWith(JUnit4.class)
 public class InheritanceMetadataTest {
 
-  @Rule
-  public final CompilationRule compilation = new CompilationRule();
+  @Rule public final CompilationRule compilation = new CompilationRule();
 
   private Elements elements;
 
