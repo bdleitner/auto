@@ -35,12 +35,12 @@ abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports
   }
 
   @Override
-  public ImmutableList<MethodMetadata> getOrderedNeededMethods() {
+  public ImmutableList<MethodMetadata> getOrderedRequiredMethods() {
     if (orderedNeededMethods == null) {
       final Map<String, String> paramNamesMap = getParamNamesMap();
       orderedNeededMethods = ImmutableList.copyOf(
           Iterables.transform(
-              classMetadata().getOrderedNeededMethods(),
+              classMetadata().getOrderedRequiredMethods(),
               new Function<MethodMetadata, MethodMetadata>() {
                   @Override
                   public MethodMetadata apply(MethodMetadata input) {

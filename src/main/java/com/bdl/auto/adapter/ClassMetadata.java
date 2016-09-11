@@ -68,9 +68,9 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
     for (InheritanceMetadata inheritance : inheritances()) {
       imports.addAll(inheritance.getImports());
     }
-//    for (ConstructorMetadata constructor : constructors()) {
-//      imports.addAll(constructor.getImports());
-//    }
+    for (ConstructorMetadata constructor : constructors()) {
+      imports.addAll(constructor.getImports());
+    }
     for (MethodMetadata method : methods()) {
       imports.addAll(method.getImports());
     }
@@ -79,12 +79,32 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
     return ImmutableList.copyOf(allImports);
   }
 
+  ImmutableList<ConstructorMetadata> getOrderedRequiredConstructors() {
+    if (orderedRequiredConstructors == null) {
+      List<ConstructorMetadata> constructors = Lists.newArrayList(Iterables.filter(constructors(),
+          new Predicate<ConstructorMetadata>() {
+            @Override
+            public boolean apply(ConstructorMetadata input) {
+              return input.visibility() != Visibility.PRIVATE;
+            }
+          }));
+      Collections.sort(constructors);
+      // If there is only one constructor and has no parameters, then we don't need it.
+      if (constructors.size() == 1 && constructors.get(0).parameters().size() == 0) {
+        orderedRequiredConstructors = ImmutableList.of();
+      } else {
+        orderedRequiredConstructors = ImmutableList.copyOf(constructors);
+      }
+    }
+    return orderedRequiredConstructors;
+  }
+
   @Override
-  public ImmutableList<MethodMetadata> getOrderedNeededMethods() {
+  public ImmutableList<MethodMetadata> getOrderedRequiredMethods() {
     if (orderedNeededMethods == null) {
       Set<MethodMetadata> neededMethods = Sets.newHashSet();
       for (InheritanceMetadata inheritance : inheritances()) {
-        neededMethods.addAll(inheritance.getOrderedNeededMethods());
+        neededMethods.addAll(inheritance.getOrderedRequiredMethods());
       }
 
       for (MethodMetadata method : methods()) {
@@ -134,26 +154,6 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
 
   String unboundedTypeParams() {
     return type().nameBuilder().addSimpleParams().toString();
-  }
-
-  ImmutableList<ConstructorMetadata> orderedRequiredConstructors() {
-    if (orderedRequiredConstructors == null) {
-      List<ConstructorMetadata> constructors = Lists.newArrayList(Iterables.filter(constructors(),
-          new Predicate<ConstructorMetadata>() {
-            @Override
-            public boolean apply(ConstructorMetadata input) {
-              return input.visibility() != Visibility.PRIVATE;
-            }
-          }));
-      Collections.sort(constructors);
-      // If there is only one constructor and has no parameters, then we don't need it.
-      if (constructors.size() == 1 && constructors.get(0).parameters().size() == 0) {
-        orderedRequiredConstructors = ImmutableList.of();
-      } else {
-        orderedRequiredConstructors = ImmutableList.copyOf(constructors);
-      }
-    }
-    return orderedRequiredConstructors;
   }
 
   @Override

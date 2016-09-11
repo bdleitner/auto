@@ -26,11 +26,11 @@ abstract class AbstractAdapterWriter {
 
     writeClassOpening(writer, type);
 
-    for (ConstructorMetadata constructor : type.orderedRequiredConstructors()) {
+    for (ConstructorMetadata constructor : type.getOrderedRequiredConstructors()) {
       writeConstructor(writer, type.decoratedName(suffix), constructor);
     }
 
-    for (MethodMetadata method : type.getOrderedNeededMethods()) {
+    for (MethodMetadata method : type.getOrderedRequiredMethods()) {
       writeMethod(writer, method.toBuilder().setIsAbstract(false).build());
     }
     writeClassClosing(writer);

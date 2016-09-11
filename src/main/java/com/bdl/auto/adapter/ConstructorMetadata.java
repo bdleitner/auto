@@ -7,6 +7,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -19,10 +25,22 @@ import javax.lang.model.element.VariableElement;
  * @author Ben Leitner
  */
 @AutoValue
-abstract class ConstructorMetadata implements Comparable<ConstructorMetadata> {
+abstract class ConstructorMetadata implements Comparable<ConstructorMetadata>, GeneratesImports {
 
   abstract Visibility visibility();
+
   abstract ImmutableList<ParameterMetadata> parameters();
+
+  @Override
+  public ImmutableList<String> getImports() {
+    Set<String> imports = Sets.newHashSet();
+    for (ParameterMetadata param : parameters()) {
+      imports.addAll(param.getImports());
+    }
+    List<String> allImports = Lists.newArrayList(imports);
+    Collections.sort(allImports);
+    return ImmutableList.copyOf(allImports);
+  }
 
   @Override
   public int compareTo(ConstructorMetadata that) {
@@ -32,11 +50,11 @@ abstract class ConstructorMetadata implements Comparable<ConstructorMetadata> {
         .result();
   }
 
-  public String toString(String className) {
+  String toString(String className) {
     return String.format("%s%s(%s)", visibility().prefix(), className, Joiner.on(", ").join(parameters()));
   }
 
-  public String superCall() {
+  String superCall() {
     return String.format("super(%s)", Joiner.on(", ").join(Iterables.transform(parameters(),
         new Function<ParameterMetadata, String>() {
           @Override
@@ -76,6 +94,7 @@ abstract class ConstructorMetadata implements Comparable<ConstructorMetadata> {
   @AutoValue.Builder
   abstract static class Builder {
     abstract Builder visibility(Visibility visibility);
+
     abstract ImmutableList.Builder<ParameterMetadata> parametersBuilder();
 
     Builder addParameter(ParameterMetadata parameter) {

@@ -83,7 +83,7 @@ public class InheritanceMetadataTest {
             .build())
         .build());
 
-    assertThat(actual.getOrderedNeededMethods()).containsExactly(
+    assertThat(actual.getOrderedRequiredMethods()).containsExactly(
         MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
             .setIsAbstract(true)
@@ -135,7 +135,7 @@ public class InheritanceMetadataTest {
             .build())
         .build());
 
-    assertThat(actual.getOrderedNeededMethods()).containsExactly(
+    assertThat(actual.getOrderedRequiredMethods()).containsExactly(
         MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
             .setIsAbstract(true)
