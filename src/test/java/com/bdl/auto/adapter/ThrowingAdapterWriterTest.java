@@ -32,25 +32,28 @@ public class ThrowingAdapterWriterTest {
             .setPackageName("com.bdl.auto.adapter")
             .setName("Simple")
             .build())
-        .addAbstractMethod(
+        .addMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
+                .setIsAbstract(true)
                 .setType(TestingTypes.INT)
                 .setName("add")
                 .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
                 .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
                 .build())
-        .addAbstractMethod(
+        .addMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
+                .setIsAbstract(true)
                 .setType(TestingTypes.STRING)
                 .setName("repeat")
                 .addParameter(ParameterMetadata.of(TestingTypes.STRING, "template"))
                 .addParameter(ParameterMetadata.of(TestingTypes.INT, "times"))
                 .build())
-        .addAbstractMethod(
+        .addMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
+                .setIsAbstract(true)
                 .setType(TestingTypes.THING)
                 .setName("getThing")
                 .build())
@@ -67,9 +70,10 @@ public class ThrowingAdapterWriterTest {
             .setPackageName("com.bdl.auto.adapter")
             .setName("SimpleInterface")
             .build())
-        .addAbstractMethod(
+        .addMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
+                .setIsAbstract(true)
                 .setType(TestingTypes.INT)
                 .setName("add")
                 .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
@@ -89,9 +93,10 @@ public class ThrowingAdapterWriterTest {
             .setName("Parameterized")
             .addParam(TestingTypes.PARAM_T_EXTENDS_FOO)
             .build())
-        .addAbstractMethod(
+        .addMethod(
             MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
+                .setIsAbstract(true)
                 .setType(TestingTypes.PARAM_T)
                 .setName("frozzle")
                 .addParameter(ParameterMetadata.of(TestingTypes.PARAM_T, "input"))
@@ -112,6 +117,7 @@ public class ThrowingAdapterWriterTest {
         .build();
     MethodMetadata subtractMethod = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
+        .setIsAbstract(true)
         .setType(TestingTypes.INT)
         .setName("subtract")
         .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
@@ -123,9 +129,8 @@ public class ThrowingAdapterWriterTest {
             .setPackageName("com.bdl.auto.adapter")
             .setName("Partial")
             .build())
-        .addAbstractMethod(addMethod)
-        .addAbstractMethod(subtractMethod)
-        .addImplementedMethod(addMethod)
+        .addMethod(addMethod)
+        .addMethod(subtractMethod)
         .build();
 
     assertOutput(type);
@@ -148,15 +153,17 @@ public class ThrowingAdapterWriterTest {
             .visibility(Visibility.PACKAGE_LOCAL)
             .addParameter(ParameterMetadata.of(TestingTypes.STRING, "arg1"))
             .build())
-        .addAbstractMethod(MethodMetadata.builder()
+        .addMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
+            .setIsAbstract(true)
             .setType(TestingTypes.INT)
             .setName("add")
             .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
             .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
             .build())
-        .addAbstractMethod(MethodMetadata.builder()
+        .addMethod(MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
+            .setIsAbstract(true)
             .setType(TestingTypes.INT)
             .setName("subtract")
             .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))

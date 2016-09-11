@@ -12,7 +12,7 @@ import java.util.Comparator;
  * @author Ben Leitner
  */
 @AutoValue
-abstract class ParameterMetadata {
+abstract class ParameterMetadata implements GeneratesImports {
   static final Comparator<ImmutableList<ParameterMetadata>> IMMUTABLE_LIST_COMPARATOR
       = Comparators.forLists(new Function<ParameterMetadata, TypeMetadata>() {
     @Override
@@ -27,6 +27,11 @@ abstract class ParameterMetadata {
 
   String name() {
     return name;
+  }
+
+  @Override
+  public ImmutableList<String> getImports() {
+    return type().getImports();
   }
 
   static ParameterMetadata of(TypeMetadata type, String name) {

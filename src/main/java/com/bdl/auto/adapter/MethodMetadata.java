@@ -8,9 +8,14 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -24,7 +29,7 @@ import javax.lang.model.element.VariableElement;
  * @author Ben Leitner
  */
 @AutoValue
-abstract class MethodMetadata implements Comparable<MethodMetadata> {
+abstract class MethodMetadata implements Comparable<MethodMetadata>, GeneratesImports {
 
   abstract Visibility visibility();
   abstract boolean isAbstract();
@@ -81,6 +86,21 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
         .result();
   }
 
+  @Override
+  public ImmutableList<String> getImports() {
+    Set<String> imports = Sets.newHashSet();
+    for (TypeMetadata typeParam : typeParameters()) {
+      imports.addAll(typeParam.getImports());
+    }
+    imports.addAll(type().getImports());
+    for (ParameterMetadata param : parameters()) {
+      imports.addAll(param.getImports());
+    }
+    List<String> allImports = Lists.newArrayList(imports);
+    Collections.sort(allImports);
+    return ImmutableList.copyOf(allImports);
+  }
+
   private String typeParametersPrefix() {
     if (typeParameters().isEmpty()) {
       return "";
@@ -111,6 +131,8 @@ abstract class MethodMetadata implements Comparable<MethodMetadata> {
         name(),
         Joiner.on(", ").join(parameters()));
   }
+
+  abstract Builder toBuilder();
 
   static Builder builder() {
     return new AutoValue_MethodMetadata.Builder()

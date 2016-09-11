@@ -8,11 +8,16 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * Metadata class for a relevant parts of a class to write.
@@ -20,7 +25,7 @@ import javax.lang.model.element.ElementKind;
  * @author Ben Leitner
  */
 @AutoValue
-abstract class ClassMetadata {
+abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
 
   /** Enumeration of the possible types to AudoAdapt: Class and Interface. */
   enum Category {
@@ -40,7 +45,7 @@ abstract class ClassMetadata {
   }
 
   private ImmutableList<ConstructorMetadata> orderedRequiredConstructors;
-  private ImmutableList<MethodMetadata> orderedRequiredMethods;
+  private ImmutableList<MethodMetadata> orderedNeededMethods;
 
   /** The AutoAdaptee's {@link Category}. */
   abstract Category category();
@@ -48,11 +53,54 @@ abstract class ClassMetadata {
   /** Contains the complete type metadata for the class. */
   abstract TypeMetadata type();
 
+  /** The inheritance metadatas for the types that this one inherits from. */
+  abstract ImmutableList<InheritanceMetadata> inheritances();
+
   abstract ImmutableSet<ConstructorMetadata> constructors();
 
-  abstract ImmutableSet<MethodMetadata> abstractMethods();
+  /** Methods that are declared in this type. */
+  abstract ImmutableList<MethodMetadata> methods();
 
-  abstract ImmutableSet<MethodMetadata> implementedMethods();
+  @Override
+  public ImmutableList<String> getImports() {
+    Set<String> imports = Sets.newHashSet();
+    imports.addAll(type().getImports());
+    for (InheritanceMetadata inheritance : inheritances()) {
+      imports.addAll(inheritance.getImports());
+    }
+//    for (ConstructorMetadata constructor : constructors()) {
+//      imports.addAll(constructor.getImports());
+//    }
+    for (MethodMetadata method : methods()) {
+      imports.addAll(method.getImports());
+    }
+    List<String> allImports = Lists.newArrayList(imports);
+    Collections.sort(allImports);
+    return ImmutableList.copyOf(allImports);
+  }
+
+  @Override
+  public ImmutableList<MethodMetadata> getOrderedNeededMethods() {
+    if (orderedNeededMethods == null) {
+      Set<MethodMetadata> neededMethods = Sets.newHashSet();
+      for (InheritanceMetadata inheritance : inheritances()) {
+        neededMethods.addAll(inheritance.getOrderedNeededMethods());
+      }
+
+      for (MethodMetadata method : methods()) {
+        if (method.isAbstract()) {
+          neededMethods.add(method);
+        } else {
+          neededMethods.remove(method);
+        }
+      }
+
+      List<MethodMetadata> ordered = Lists.newArrayList(neededMethods);
+      Collections.sort(ordered);
+      orderedNeededMethods = ImmutableList.copyOf(ordered);
+    }
+    return orderedNeededMethods;
+  }
 
   String nestedClassName() {
     return type().nameBuilder()
@@ -108,19 +156,30 @@ abstract class ClassMetadata {
     return orderedRequiredConstructors;
   }
 
-  ImmutableList<MethodMetadata> orderedRequiredMethods() {
-    if (orderedRequiredMethods == null) {
-      ArrayList<MethodMetadata> methods = Lists.newArrayList(
-          Sets.difference(abstractMethods(), implementedMethods()));
-      Collections.sort(methods);
-      orderedRequiredMethods = ImmutableList.copyOf(methods);
-    }
-    return orderedRequiredMethods;
-  }
-
   @Override
   public String toString() {
     return fullyQualifiedPathName();
+  }
+
+  static ClassMetadata fromType(DeclaredType type) {
+    return fromElement(type.asElement());
+  }
+
+  static ClassMetadata fromElement(Element element) {
+    Builder metadata = builder()
+        .setCategory(Category.forKind(element.getKind()))
+        .setType(TypeMetadata.fromElement(element));
+
+    for (TypeMirror inherited : ((TypeElement) element).getInterfaces()) {
+      metadata.addInheritance(InheritanceMetadata.fromType((DeclaredType) inherited));
+    }
+
+    for (Element enclosed : element.getEnclosedElements()) {
+      if (enclosed.getKind() == ElementKind.METHOD) {
+        metadata.addMethod(MethodMetadata.fromMethod((ExecutableElement) enclosed));
+      }
+    }
+    return metadata.build();
   }
 
   static Builder builder() {
@@ -133,24 +192,24 @@ abstract class ClassMetadata {
 
     abstract Builder setType(TypeMetadata type);
 
+    abstract ImmutableList.Builder<InheritanceMetadata> inheritancesBuilder();
+
     abstract ImmutableSet.Builder<ConstructorMetadata> constructorsBuilder();
 
-    abstract ImmutableSet.Builder<MethodMetadata> abstractMethodsBuilder();
+    abstract ImmutableList.Builder<MethodMetadata> methodsBuilder();
 
-    abstract ImmutableSet.Builder<MethodMetadata> implementedMethodsBuilder();
+    Builder addInheritance(InheritanceMetadata inheritance) {
+      inheritancesBuilder().add(inheritance);
+      return this;
+    }
 
     Builder addConstructor(ConstructorMetadata constructor) {
       constructorsBuilder().add(constructor);
       return this;
     }
 
-    Builder addAbstractMethod(MethodMetadata method) {
-      abstractMethodsBuilder().add(method);
-      return this;
-    }
-
-    Builder addImplementedMethod(MethodMetadata method) {
-      implementedMethodsBuilder().add(method);
+    Builder addMethod(MethodMetadata method) {
+      methodsBuilder().add(method);
       return this;
     }
 

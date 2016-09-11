@@ -30,8 +30,8 @@ abstract class AbstractAdapterWriter {
       writeConstructor(writer, type.decoratedName(suffix), constructor);
     }
 
-    for (MethodMetadata method : type.orderedRequiredMethods()) {
-      writeMethod(writer, method);
+    for (MethodMetadata method : type.getOrderedNeededMethods()) {
+      writeMethod(writer, method.toBuilder().setIsAbstract(false).build());
     }
     writeClassClosing(writer);
 

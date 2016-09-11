@@ -118,7 +118,7 @@ public class AutoAdapterProcessor extends AbstractProcessor {
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (executable.getModifiers().contains(Modifier.ABSTRACT)) {
         MethodMetadata method = MethodMetadata.fromMethod(executable);
-        typeBuilder.addAbstractMethod(method);
+        typeBuilder.addMethod(method);
       }
     }
 
@@ -146,7 +146,7 @@ public class AutoAdapterProcessor extends AbstractProcessor {
       ExecutableElement executable = ((ExecutableElement) enclosed);
       if (!executable.getModifiers().contains(Modifier.ABSTRACT)) {
         MethodMetadata method = MethodMetadata.fromMethod(executable);
-        typeBuilder.addImplementedMethod(method);
+        typeBuilder.addMethod(method);
       }
     }
 
