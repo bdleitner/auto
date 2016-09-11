@@ -10,6 +10,7 @@ import java.util.List;
  *
  * @author Ben Leitner
  */
+@SuppressWarnings("unused") // Used via compiler element search in MethodMetadataTest.
 interface ComplexParameterized<X, Y extends Comparable<Y>, Z extends List<Y>> {
 
   <A, B extends List<A>> ImmutableList<A> filter(B source, Predicate<A> predicate);

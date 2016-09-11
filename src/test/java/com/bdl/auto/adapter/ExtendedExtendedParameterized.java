@@ -6,6 +6,7 @@ package com.bdl.auto.adapter;
  *
  * @author Ben Leitner
  */
+@SuppressWarnings("unused") // Used via compiler element search in InheritanceMetadataTest.
 public interface ExtendedExtendedParameterized<C> extends ExtendedParameterized<C> {
 
   C superExtendedFrozzle(C input);
