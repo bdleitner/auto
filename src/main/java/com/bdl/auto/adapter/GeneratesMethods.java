@@ -9,6 +9,6 @@ import com.google.common.collect.ImmutableList;
  */
 public interface GeneratesMethods {
 
-  ImmutableList<MethodMetadata> getOrderedRequiredMethods();
+  ImmutableList<MethodMetadata> getAllMethods();
 
 }

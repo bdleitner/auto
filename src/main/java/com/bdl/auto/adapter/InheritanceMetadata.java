@@ -22,7 +22,7 @@ import javax.lang.model.type.TypeMirror;
 @AutoValue
 abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports {
 
-  private ImmutableList<MethodMetadata> orderedNeededMethods;
+  private ImmutableList<MethodMetadata> allMethods;
 
   /** The type parameters given in the {@code extends} or {@code implements} clause. */
   abstract ImmutableList<TypeMetadata> inheritanceParams();
@@ -35,12 +35,12 @@ abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports
   }
 
   @Override
-  public ImmutableList<MethodMetadata> getOrderedRequiredMethods() {
-    if (orderedNeededMethods == null) {
+  public ImmutableList<MethodMetadata> getAllMethods() {
+    if (allMethods == null) {
       final Map<String, String> paramNamesMap = getParamNamesMap();
-      orderedNeededMethods = ImmutableList.copyOf(
+      allMethods = ImmutableList.copyOf(
           Iterables.transform(
-              classMetadata().getOrderedRequiredMethods(),
+              classMetadata().getAllMethods(),
               new Function<MethodMetadata, MethodMetadata>() {
                   @Override
                   public MethodMetadata apply(MethodMetadata input) {
@@ -48,7 +48,7 @@ abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports
                   }
                 }));
     }
-    return orderedNeededMethods;
+    return allMethods;
   }
 
   private Map<String, String> getParamNamesMap() {

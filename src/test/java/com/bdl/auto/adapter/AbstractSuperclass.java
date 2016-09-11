@@ -24,4 +24,8 @@ abstract class AbstractSuperclass<Q> implements Simple, OtherParameterized<Q> {
   public Q frumple(Q input) {
     return input;
   }
+
+  public String blorp(String input) {
+    return input;
+  }
 }

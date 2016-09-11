@@ -1,7 +1,9 @@
 package com.bdl.auto.adapter;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -15,7 +17,6 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -27,6 +28,22 @@ import javax.lang.model.type.TypeMirror;
  */
 @AutoValue
 abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
+
+  private static final Predicate<MethodMetadata> ABSTRACT_PREDICATE = new Predicate<MethodMetadata>() {
+    @Override
+    public boolean apply(MethodMetadata input) {
+      return input.isAbstract();
+    }
+  };
+
+  private static final Predicate<MethodMetadata> CONCRETE_PREDICATE = Predicates.not(ABSTRACT_PREDICATE);
+  private static final Function<MethodMetadata, MethodMetadata> TO_ABSTRACT
+      = new Function<MethodMetadata, MethodMetadata>() {
+    @Override
+    public MethodMetadata apply(MethodMetadata input) {
+      return input.toBuilder().setIsAbstract(true).build();
+    }
+  };
 
   /** Enumeration of the possible types to AudoAdapt: Class and Interface. */
   enum Category {
@@ -46,7 +63,8 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
   }
 
   private ImmutableList<ConstructorMetadata> orderedRequiredConstructors;
-  private ImmutableList<MethodMetadata> orderedNeededMethods;
+  private ImmutableList<MethodMetadata> allMethods;
+  private ImmutableList<MethodMetadata> orderedRequiredMethods;
 
   /** The AutoAdaptee's {@link Category}. */
   abstract Category category();
@@ -101,26 +119,33 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
   }
 
   @Override
-  public ImmutableList<MethodMetadata> getOrderedRequiredMethods() {
-    if (orderedNeededMethods == null) {
-      Set<MethodMetadata> neededMethods = Sets.newHashSet();
+  public ImmutableList<MethodMetadata> getAllMethods() {
+    if (allMethods == null) {
+      Set<MethodMetadata> methods = Sets.newHashSet();
       for (InheritanceMetadata inheritance : inheritances()) {
-        neededMethods.addAll(inheritance.getOrderedRequiredMethods());
+        methods.addAll(inheritance.getAllMethods());
       }
 
-      for (MethodMetadata method : methods()) {
-        if (method.isAbstract()) {
-          neededMethods.add(method);
-        } else {
-          neededMethods.remove(method.toBuilder().setIsAbstract(true).build());
-        }
-      }
-
-      List<MethodMetadata> ordered = Lists.newArrayList(neededMethods);
-      Collections.sort(ordered);
-      orderedNeededMethods = ImmutableList.copyOf(ordered);
+      methods.addAll(methods());
+      allMethods = ImmutableList.copyOf(methods);
     }
-    return orderedNeededMethods;
+    return allMethods;
+  }
+
+  public ImmutableList<MethodMetadata> getOrderedRequiredMethods() {
+    if (orderedRequiredMethods == null) {
+      ImmutableList<MethodMetadata> allMethods = getAllMethods();
+
+      Set<MethodMetadata> abstractMethods = Sets.newHashSet(Iterables.filter(allMethods, ABSTRACT_PREDICATE));
+
+      abstractMethods.removeAll(
+          ImmutableSet.copyOf(Iterables.transform(Iterables.filter(allMethods, CONCRETE_PREDICATE), TO_ABSTRACT)));
+
+      List<MethodMetadata> ordered = Lists.newArrayList(abstractMethods);
+      Collections.sort(ordered);
+      orderedRequiredMethods = ImmutableList.copyOf(ordered);
+    }
+    return orderedRequiredMethods;
   }
 
   String nestedClassName() {
@@ -173,8 +198,7 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
 
     TypeElement typeElement = (TypeElement) element;
     TypeMirror superClass = typeElement.getSuperclass();
-    if (superClass instanceof DeclaredType
-      && ((DeclaredType) superClass).asElement().getModifiers().contains(Modifier.ABSTRACT)) {
+    if (superClass instanceof DeclaredType) {
       metadata.addInheritance(InheritanceMetadata.fromType((DeclaredType) superClass));
     }
 

@@ -26,6 +26,7 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 
 /**
  * Encapsulation of Metadata information for a Type reference.
@@ -176,7 +177,10 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
     if (type instanceof TypeVariable) {
       return ((TypeVariable) type).asElement().getSimpleName().toString();
     }
-    if (type instanceof PrimitiveType || type instanceof NoType || type instanceof NullType) {
+    if (type instanceof PrimitiveType
+        || type instanceof NoType
+        || type instanceof NullType
+        || type instanceof WildcardType) {
       return type.toString();
     }
     throw new IllegalArgumentException(String.format("Cannot determine name for type: %s (%s)",

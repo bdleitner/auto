@@ -10,7 +10,7 @@ import java.util.List;
 @AutoAdapter
 abstract class AbstractClass<A, B extends Comparable<B>, C extends List<B>>
     extends AbstractSuperclass<B>
-    implements ExtendedExtendedParameterized<A>, ComplexParameterized<A, B, C> {
+    implements ExtendedExtendedParameterized<A>, ComplexParameterized<A, B, C>, OtherSimple {
 
   private AbstractClass(String blargh) {
     super(blargh);
