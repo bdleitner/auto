@@ -19,8 +19,7 @@ import javax.lang.model.util.Elements;
  */
 public class ClassMetadataTest {
 
-  @Rule
-  public final CompilationRule compilation = new CompilationRule();
+  @Rule public final CompilationRule compilation = new CompilationRule();
 
   private ClassMetadata metadata;
 
@@ -45,17 +44,17 @@ public class ClassMetadataTest {
         MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
             .setIsAbstract(true)
-            .setType(TestingTypes.STRING)
+            .setType(TypeMetadata.STRING)
             .setName("thingToString")
             .addParameter(ParameterMetadata.of(TestingTypes.THING, "input"))
             .build(),
         MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
             .setIsAbstract(true)
-            .setType(TestingTypes.INT)
+            .setType(TypeMetadata.INT)
             .setName("add")
-            .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
-            .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
+            .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
+            .addParameter(ParameterMetadata.of(TypeMetadata.INT, "second"))
             .build(),
         MethodMetadata.builder()
             .setVisibility(Visibility.PUBLIC)
@@ -116,8 +115,21 @@ public class ClassMetadataTest {
             .setType(simpleTypeParam("B"))
             .setName("blargh")
             .addParameter(ParameterMetadata.of(simpleTypeParam("B"), "input"))
-            .build()
-        );
+            .build(),
+        MethodMetadata.builder()
+            .setVisibility(Visibility.PUBLIC)
+            .setIsAbstract(true)
+            .setType(TypeMetadata.VOID)
+            .setName("doNothing")
+            .addParameter(ParameterMetadata.of(TypeMetadata.STRING, "input"))
+            .build(),
+        MethodMetadata.builder()
+            .setVisibility(Visibility.PROTECTED)
+            .setIsAbstract(true)
+            .setType(TypeMetadata.VOID)
+            .setName("voidFromSuper")
+            .addParameter(ParameterMetadata.of(TypeMetadata.INT, "foo"))
+            .build());
   }
 
   @Test
@@ -125,11 +137,11 @@ public class ClassMetadataTest {
     assertThat(metadata.getOrderedRequiredConstructors()).containsExactly(
         ConstructorMetadata.builder()
             .visibility(Visibility.PACKAGE_LOCAL)
-            .addParameter(ParameterMetadata.of(TestingTypes.INT, "foo"))
+            .addParameter(ParameterMetadata.of(TypeMetadata.INT, "foo"))
             .build(),
         ConstructorMetadata.builder()
             .visibility(Visibility.PUBLIC)
-            .addParameter(ParameterMetadata.of(TestingTypes.BOOLEAN, "foo"))
+            .addParameter(ParameterMetadata.of(TypeMetadata.BOOLEAN, "foo"))
             .build());
   }
 }

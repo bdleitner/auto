@@ -50,7 +50,7 @@ public class InheritanceMetadataTest {
             .addMethod(MethodMetadata.builder()
                 .setVisibility(Visibility.PUBLIC)
                 .setIsAbstract(true)
-                .setType(TestingTypes.STRING)
+                .setType(TypeMetadata.STRING)
                 .setName("thingToString")
                 .addParameter(ParameterMetadata.of(TestingTypes.THING, "thing"))
                 .build())

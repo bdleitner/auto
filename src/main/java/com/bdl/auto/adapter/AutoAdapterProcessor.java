@@ -15,12 +15,8 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
@@ -58,103 +54,27 @@ public class AutoAdapterProcessor extends AbstractProcessor {
     return true;
   }
 
-  private TypeElement convert(TypeMirror type) {
-    return ((TypeElement) ((DeclaredType) type).asElement());
-  }
-
   private void processElement(TypeElement element) {
     if (!element.getModifiers().contains(Modifier.ABSTRACT)) {
       messager.printMessage(Diagnostic.Kind.ERROR,
           String.format("AutoAdapter annotation added to non-abstract class: %s", element));
       return;
     }
-    ClassMetadata.Builder typeBuilder = ClassMetadata.builder();
-    collectBasicMetadata(element, typeBuilder);
-    collectConstructors(element, typeBuilder);
-
-    collectAllAbstractExecutables(element, typeBuilder);
-    collectAllImplementedExecutables(element, typeBuilder);
-
-    ClassMetadata classMetadata = typeBuilder.build();
+    ClassMetadata classMetadata = ClassMetadata.fromElement(element);
 
     try {
-      DefaultValuesAdapterWriter notOpWriter = new DefaultValuesAdapterWriter(new JavaFileObjectWriterFunction(processingEnv));
+      JavaFileObjectWriterFunction writerFunction = new JavaFileObjectWriterFunction(processingEnv);
+
+      DefaultValuesAdapterWriter notOpWriter = new DefaultValuesAdapterWriter(writerFunction);
       notOpWriter.write(classMetadata);
 
-      ThrowingAdapterWriter throwingWriter = new ThrowingAdapterWriter(
-          new JavaFileObjectWriterFunction(processingEnv));
+      ThrowingAdapterWriter throwingWriter = new ThrowingAdapterWriter(writerFunction);
       throwingWriter.write(classMetadata);
     } catch (Exception ex) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,
           ex.getMessage());
     }
-  }
-
-  private void collectBasicMetadata(Element element, ClassMetadata.Builder typeBuilder) {
-    typeBuilder.setType(TypeMetadata.fromElement(element));
-  }
-
-  private void collectConstructors(Element element, ClassMetadata.Builder typeBuilder) {
-    for (Element enclosed : element.getEnclosedElements()) {
-      if (enclosed.getKind() != ElementKind.CONSTRUCTOR) {
-        continue;
-      }
-      ConstructorMetadata constructor = ConstructorMetadata.fromConstructor(enclosed);
-      typeBuilder.addConstructor(constructor);
-    }
-  }
-
-  private void collectAllAbstractExecutables(TypeElement type, ClassMetadata.Builder typeBuilder) {
-    if (!type.getModifiers().contains(Modifier.ABSTRACT)) {
-      return;
-    }
-
-    for (Element enclosed : type.getEnclosedElements()) {
-      if (enclosed.getKind() != ElementKind.METHOD) {
-        continue;
-      }
-
-      ExecutableElement executable = ((ExecutableElement) enclosed);
-      if (executable.getModifiers().contains(Modifier.ABSTRACT)) {
-        MethodMetadata method = MethodMetadata.fromMethod(executable);
-        typeBuilder.addMethod(method);
-      }
-    }
-
-    for (TypeMirror anInterface : type.getInterfaces()) {
-      collectAllAbstractExecutables(convert(anInterface), typeBuilder);
-    }
-
-    TypeMirror superclass = type.getSuperclass();
-    if (superclass.getKind() == TypeKind.NONE) {
-      return;
-    }
-    collectAllAbstractExecutables(convert(superclass), typeBuilder);
-  }
-
-  private void collectAllImplementedExecutables(TypeElement type, ClassMetadata.Builder typeBuilder) {
-    if (type.getQualifiedName().toString().equals("java.lang.Object")) {
-      return;
-    }
-
-    for (Element enclosed : type.getEnclosedElements()) {
-      if (enclosed.getKind() != ElementKind.METHOD) {
-        continue;
-      }
-
-      ExecutableElement executable = ((ExecutableElement) enclosed);
-      if (!executable.getModifiers().contains(Modifier.ABSTRACT)) {
-        MethodMetadata method = MethodMetadata.fromMethod(executable);
-        typeBuilder.addMethod(method);
-      }
-    }
-
-    TypeMirror superclass = type.getSuperclass();
-    if (superclass.getKind() == TypeKind.NONE) {
-      return;
-    }
-    collectAllImplementedExecutables(convert(superclass), typeBuilder);
   }
 
   private static class JavaFileObjectWriterFunction implements Function<String, Writer> {

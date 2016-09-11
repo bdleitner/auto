@@ -9,4 +9,6 @@ interface OtherSimple {
 
   @Override
   String toString();
+
+  void doNothing(String input);
 }

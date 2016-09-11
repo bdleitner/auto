@@ -20,17 +20,24 @@ abstract class AbstractAdapterWriter {
     this.suffix = suffix;
   }
 
-  void write(ClassMetadata type) throws IOException {
-    Writer writer = writerFunction.apply(
-        String.format("%s.%s", type.type().packageName(), type.decoratedName(suffix)));
+  void write(ClassMetadata clazz) throws IOException {
+    TypeMetadata type = clazz.type();
+    Writer writer = writerFunction.apply(type.nameBuilder()
+            .addPackagePrefix()
+            .append("AutoAdapter_")
+            .addDecoratedNamePrefix()
+            .addSimpleName()
+            .append("_")
+            .append(suffix)
+            .toString());
 
-    writeClassOpening(writer, type);
+    writeClassOpening(writer, clazz);
 
-    for (ConstructorMetadata constructor : type.getOrderedRequiredConstructors()) {
-      writeConstructor(writer, type.decoratedName(suffix), constructor);
+    for (ConstructorMetadata constructor : clazz.getOrderedRequiredConstructors()) {
+      writeConstructor(writer, clazz.decoratedName(suffix), constructor);
     }
 
-    for (MethodMetadata method : type.getAllMethods()) {
+    for (MethodMetadata method : clazz.getOrderedRequiredMethods()) {
       writeMethod(writer, method.toBuilder().setIsAbstract(false).build());
     }
     writeClassClosing(writer);
@@ -38,20 +45,20 @@ abstract class AbstractAdapterWriter {
     writer.close();
   }
 
-  private void writeClassOpening(Writer writer, ClassMetadata type)
+  private void writeClassOpening(Writer writer, ClassMetadata clazz)
       throws IOException {
-    writeLine(writer, "package %s;", type.type().packageName());
+    TypeMetadata type = clazz.type();
+    writeLine(writer, "package %s;", type.packageName());
     writeLine(writer, "");
     writeLine(writer, "import javax.annotation.Generated;");
     writeLine(writer, "");
-    writeLine(writer, "/** %s AutoAdapter Generated class for %s. */", suffix, type.nestedClassName());
+    writeLine(writer, "/** %s AutoAdapter Generated class for %s. */", suffix,
+        type.nameBuilder().addNestingPrefix().addSimpleName().toString());
     writeLine(writer, "@Generated(\"com.bdl.auto.adapter.AutoAdapterProcessor\")");
-    writeLine(writer, "public class %s%s %s %s%s {",
-        type.decoratedName(suffix),
-        type.fullTypeParams(),
-        type.category() == ClassMetadata.Category.CLASS ? "extends" : "implements",
-        type.nestedClassName(),
-        type.unboundedTypeParams());
+    writeLine(writer, "public class %s %s %s {",
+        type.nameBuilder().append("AutoAdapter_").addDecoratedNamePrefix().addSimpleName().append("_").append(suffix).addFullParams(),
+        clazz.category() == ClassMetadata.Category.CLASS ? "extends" : "implements",
+        type.nameBuilder().addNestingPrefix().addSimpleName().addSimpleParams().toString());
   }
 
   private void writeConstructor(Writer writer, String name, ConstructorMetadata constructor) throws IOException {

@@ -48,18 +48,18 @@ public class MethodMetadataTest {
     MethodMetadata method1 = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(TestingTypes.INT)
+        .setType(TypeMetadata.INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "second"))
         .build();
     MethodMetadata method2 = MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(TestingTypes.INT)
+        .setType(TypeMetadata.INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "anInt"))
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "anotherInt"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "anInt"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "anotherInt"))
         .build();
 
     assertThat(method1).isEqualTo(method2);
@@ -72,10 +72,10 @@ public class MethodMetadataTest {
     assertThat(method).isEqualTo(MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(TestingTypes.INT)
+        .setType(TypeMetadata.INT)
         .setName("add")
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "first"))
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "second"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "second"))
         .build());
 
     method = MethodMetadata.fromMethod(
@@ -83,10 +83,10 @@ public class MethodMetadataTest {
     assertThat(method).isEqualTo(MethodMetadata.builder()
         .setVisibility(Visibility.PUBLIC)
         .setIsAbstract(true)
-        .setType(TestingTypes.STRING)
+        .setType(TypeMetadata.STRING)
         .setName("repeat")
-        .addParameter(ParameterMetadata.of(TestingTypes.STRING, "template"))
-        .addParameter(ParameterMetadata.of(TestingTypes.INT, "times"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.STRING, "template"))
+        .addParameter(ParameterMetadata.of(TypeMetadata.INT, "times"))
         .build());
   }
 

@@ -28,4 +28,9 @@ abstract class AbstractClass<A, B extends Comparable<B>, C extends List<B>>
   public A frozzle(A input) {
     return input;
   }
+
+  @Override
+  protected int fromSuper(int foo) {
+    return foo;
+  }
 }

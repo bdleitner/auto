@@ -15,6 +15,10 @@ abstract class AbstractSuperclass<Q> implements Simple, OtherParameterized<Q> {
     this.aString = aString;
   }
 
+  protected abstract int fromSuper(int foo);
+
+  protected abstract void voidFromSuper(int foo);
+
   @Override
   public String repeat(String template, int times) {
     return Strings.repeat(template, times);

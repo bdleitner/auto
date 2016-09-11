@@ -36,6 +36,19 @@ import javax.lang.model.type.WildcardType;
 @AutoValue
 abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata> {
 
+  static final TypeMetadata VOID = builder()
+      .setName("void")
+      .build();
+  static final TypeMetadata INT = builder()
+      .setName("int")
+      .build();
+  static final TypeMetadata BOOLEAN = builder()
+      .setName("boolean")
+      .build();
+  static final TypeMetadata STRING = builder()
+      .setPackageName("java.lang")
+      .setName("String")
+      .build();
   private ImmutableList<String> imports;
 
   /** The package in which the type lives. */

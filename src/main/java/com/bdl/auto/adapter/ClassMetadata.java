@@ -45,7 +45,7 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
     }
   };
 
-  /** Enumeration of the possible types to AudoAdapt: Class and Interface. */
+  /** Enumeration of the possible types to AutoAdapt: Class and Interface. */
   enum Category {
     CLASS,
     INTERFACE;
@@ -148,13 +148,6 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
     return orderedRequiredMethods;
   }
 
-  String nestedClassName() {
-    return type().nameBuilder()
-        .addNestingPrefix()
-        .addSimpleName()
-        .toString();
-  }
-
   String fullyQualifiedPathName() {
     return type().nameBuilder()
         .addPackagePrefix()
@@ -174,21 +167,9 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
         .toString();
   }
 
-  String fullTypeParams() {
-    return type().nameBuilder().addFullParams().toString();
-  }
-
-  String unboundedTypeParams() {
-    return type().nameBuilder().addSimpleParams().toString();
-  }
-
   @Override
   public String toString() {
     return fullyQualifiedPathName();
-  }
-
-  static ClassMetadata fromType(DeclaredType type) {
-    return fromElement(type.asElement());
   }
 
   static ClassMetadata fromElement(Element element) {

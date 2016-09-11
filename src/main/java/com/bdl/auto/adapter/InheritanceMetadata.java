@@ -10,7 +10,6 @@ import com.google.common.collect.Iterables;
 
 import java.util.Map;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
@@ -68,10 +67,6 @@ abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports
     }
     metadata.setClassMetadata(ClassMetadata.fromElement(type.asElement()));
     return metadata.build();
-  }
-
-  static InheritanceMetadata fromElement(Element element) {
-    return fromType((DeclaredType) element.asType());
   }
 
   static Builder builder() {

@@ -22,11 +22,9 @@ class ThrowingAdapterWriter extends AbstractAdapterWriter {
     writeLine(writer, "");
     writeLine(writer, "  @Override");
     writeLine(writer, "  %s {", method.fullDescription());
-    if (!method.type().equals("void")) {
-      writeLine(writer,
-          "    throw new UnsupportedOperationException(\"The method \\\"%s\\\" is not supported in this implementation.\");",
-          method.fullDescription());
-    }
+    writeLine(writer,
+        "    throw new UnsupportedOperationException(\"The method \\\"%s\\\" is not supported in this implementation.\");",
+        method.fullDescription());
     writeLine(writer, "  }");
   }
 }

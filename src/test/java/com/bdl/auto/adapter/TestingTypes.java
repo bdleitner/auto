@@ -7,23 +7,6 @@ package com.bdl.auto.adapter;
  */
 class TestingTypes {
 
-  static final TypeMetadata VOID = TypeMetadata.builder()
-      .setName("void")
-      .build();
-
-  static final TypeMetadata INT = TypeMetadata.builder()
-      .setName("int")
-      .build();
-
-  static final TypeMetadata BOOLEAN = TypeMetadata.builder()
-      .setName("boolean")
-      .build();
-
-  static final TypeMetadata STRING = TypeMetadata.builder()
-      .setPackageName("java.lang")
-      .setName("String")
-      .build();
-
   static final TypeMetadata THING = TypeMetadata.builder()
       .setPackageName("com.bdl.auto.adapter")
       .setName("Thing")
