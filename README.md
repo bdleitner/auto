@@ -61,8 +61,8 @@ and all other methods will simply do nothing when called.
 #### Testing
 Suppose you're testing your class's interaction with a library interface for which generating an
 instance is nontrivial.  One approach to solve this is to mock the interface with something like
-*EasyMock* or *Mockito*.  Depending on exactly what you want the methods you're actually
-implementing to do, this may be more complex than simply creating an adapter:
+*EasyMock* or *Mockito*.  But if you want a partial fake or want the implemented methods to actually 
+perform some logic, an adapter may be simpler:
 
     public class SomeTestClass {
       @AutoAdapter
