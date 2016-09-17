@@ -22,7 +22,7 @@ If you annotate an abstract class that has non-default constructors, matching co
 created on the implementation class which simply delegate to your abstract class.
 
 The options for behavior of the implemented methods are reflected in the
-[`ImplOption` enum](https://bdleitner.github.io/autoimpl/com/bdl/auto/impl/ImplOption.html)
+`ImplOption` enum.
 
 * `THROW_EXCEPTION` - the default.  The implemented method throws an`UnsupportedOperationException`.
 * `RETURN_DEFAULT_VALUE` - the method returns a default value.
@@ -33,7 +33,7 @@ The options for behavior of the implemented methods are reflected in the
 * `USE_PARENT` - defers to the next higher level.
 
 The top level control is `AutoImpl.value()`, which defaults to `THROW_EXCEPTION`
-Finer-grained controls are supported on [`AutoImpl`](https://bdleitner.github.io/autoimpl/com/bdl/auto/impl/AutoImpl.html) itself
+Finer-grained controls are supported on `AutoImpl` itself
 for each category of return type:
 
   * numeric - `AutoImpl.numericImpl()`
@@ -45,7 +45,7 @@ for each category of return type:
 These can all be set independently.  Any that are not set (or that are set to the default `USE_PARENT`
 will defer to `AutoImpl.value()`.
 
-Finally, individual methods can be annotated with [`MethodImpl`](https://bdleitner.github.io/autoimpl/com/bdl/auto/impl/MethodImpl.html).
+Finally, individual methods can be annotated with `MethodImpl`.
 `MethodImpl` has a single `value` parameter that, if present, overrides the default settings
  from `AutoImpl`.
 
