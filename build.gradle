@@ -64,13 +64,6 @@ task jarDocs(type: Jar) {
     from 'build/docs/javadoc/'
 }
 
-task copyDocs(type: Copy) {
-    delete fileTree(dir: 'docs' )
-    dependsOn javadoc
-    from 'build/docs/javadoc'
-    into 'docs'
-}
-
 task copyJars(type: Copy) {
     dependsOn jar, jarSources, jarDocs
     from 'build/libs'
@@ -79,5 +72,5 @@ task copyJars(type: Copy) {
 }
 
 build {
-    dependsOn copyJars, copyDocs
+    dependsOn copyJars
 }
