@@ -1,0 +1,57 @@
+package com.bdl.auto.impl;
+
+import javax.annotation.Generated;
+
+/** AutoImpl Generated class for HasOverrides. */
+@Generated("com.bdl.auto.impl.AutoImplProcessor")
+public class Auto_HasOverrides_Impl implements HasOverrides {
+
+  @Override
+  public boolean booleanMethod() {
+    return false;
+  }
+
+  @Override
+  public double doubleMethod() {
+    return 0;
+  }
+
+  @Override
+  public int intMethod() {
+    return 0;
+  }
+
+  @Override
+  public long longMethod() {
+    return 0;
+  }
+
+  @Override
+  public java.lang.Object objectMethod() {
+    throw new UnsupportedOperationException("The method \"public java.lang.Object objectMethod()\" is not supported in this implementation.");
+  }
+
+  @Override
+  public boolean overriddenBooleanMethod() {
+    throw new UnsupportedOperationException("The method \"public boolean overriddenBooleanMethod()\" is not supported in this implementation.");
+  }
+
+  @Override
+  public java.lang.String overriddenStringMethod() {
+    return "";
+  }
+
+  @Override
+  public void overriddenVoidMethod() {
+  }
+
+  @Override
+  public java.lang.String stringMethod() {
+    throw new UnsupportedOperationException("The method \"public java.lang.String stringMethod()\" is not supported in this implementation.");
+  }
+
+  @Override
+  public void voidMethod() {
+    throw new UnsupportedOperationException("The method \"public void voidMethod()\" is not supported in this implementation.");
+  }
+}

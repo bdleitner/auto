@@ -1,15 +1,15 @@
-# Auto Adapter
-*Automatic Generation of Adapter classes for Java*  
+# Auto Impl
+*Automatic generation of implementation classes for Java*  
 **Benjamin Leitner**  
 Inspired by the [Google Auto](https://github.com/google/auto) project.
 
 ## Overview
-Writing adapter classes is annoying and tedious.  To quote [Google Auto](https://github.com/google/auto),
-sounds like a job for robots.
+Writing default implementation classes is annoying and tedious.  To quote
+ [Google Auto](https://github.com/google/auto), sounds like a job for robots.
 
 ## Usage
-If you have an interface or abstract class for which you'd like to create an adapter, simply
-add the `@AutoAdapter` annotation and let the annotation processor do the rest.
+If you have an interface or abstract class for which you'd like to create a default implementation,
+simply add the `@AutoImpl` annotation and let the annotation processor do the rest.
 
 Two concrete classes will be generated:
 

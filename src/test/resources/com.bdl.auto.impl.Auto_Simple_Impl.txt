@@ -1,0 +1,23 @@
+package com.bdl.auto.impl;
+
+import javax.annotation.Generated;
+
+/** AutoImpl Generated class for Simple. */
+@Generated("com.bdl.auto.impl.AutoImplProcessor")
+public class Auto_Simple_Impl extends Simple {
+
+  @Override
+  public int add(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int add(int first, int second)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public com.bdl.auto.impl.Thing getThing() {
+    throw new UnsupportedOperationException("The method \"public com.bdl.auto.impl.Thing getThing()\" is not supported in this implementation.");
+  }
+
+  @Override
+  public java.lang.String repeat(java.lang.String template, int times) {
+    throw new UnsupportedOperationException("The method \"public java.lang.String repeat(java.lang.String template, int times)\" is not supported in this implementation.");
+  }
+}
