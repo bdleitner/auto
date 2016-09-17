@@ -11,11 +11,9 @@ Writing default implementation classes is annoying and tedious.  To quote
 If you have an interface or abstract class for which you'd like to create a default implementation,
 simply add the `@AutoImpl` annotation and let the annotation processor do the rest.
 
-Two concrete classes will be generated:
-
-* A *DefaultValue* class that implements all methods by returning a default value for all non-void methods.
-Numeric-valued methods return 0, booleans return false, Strings return "", and everything else returns null.
-* An *Throwing* class that implements all methods by throwing an `UnsupportedOperationException.`
+An class named `Auto_[ClassName]_Impl` will be created in which all methods are implemented.
+If your annotated interface/abstract class is an inner class, the name of the generated class will
+be `Auto_[OuterClass]_[InnerClass]_Impl`, with as many segments as your class has nesting layers.
 
 If you annotate an abstract class that already has implementations for some methods, those
  implementations are kept.
@@ -23,19 +21,40 @@ If you annotate an abstract class that already has implementations for some meth
 If you annotate an abstract class that has non-default constructors, matching constructors are
 created on the implementation class which simply delegate to your abstract class.
 
-The names of the generated classes take the form `AutoAdapter_[ClassName]_[Suffix]` where
+The options for behavior of the implemented methods are reflected in the
+[`ImplOption` enum](https://bdleitner.github.io/autoimpl/com/bdl/auto/impl/ImplOption.html)
 
-* `[ClassName]` is your class name: if your class is an inner class then `[ClassName]` will
-be the underscore-separated name of the full class, e.g. `ReallyOuterClass_OuterClass_InnerClass`
-* `[Suffix]` is either `DefaultValues` for the DefaultValue implementation or `Throwing` for the Throwing
- implementation.
+* `THROW_EXCEPTION` - the default.  The implemented method throws an`UnsupportedOperationException`.
+* `RETURN_DEFAULT_VALUE` - the method returns a default value.
+    * 0 for all numeric types.
+    * false for booleans.
+    * "" for Strings
+    * null for everything else.
+* `USE_PARENT` - defers to the next higher level.
+
+The top level control is `AutoImpl.value()`, which defaults to `THROW_EXCEPTION`
+Finer-grained controls are supported on [`AutoImpl`](https://bdleitner.github.io/autoimpl/com/bdl/auto/impl/AutoImpl.html) itself
+for each category of return type:
+
+  * numeric - `AutoImpl.numericImpl()`
+  * boolean - `AutoImpl.booleanImpl()`
+  * String - `AutoImpl.stringImpl()`
+  * void - `AutoImpl.voidImpl()`
+  * Everything else - `AutoImpl.objectImpl()`
+
+These can all be set independently.  Any that are not set (or that are set to the default `USE_PARENT`
+will defer to `AutoImpl.value()`.
+
+Finally, individual methods can be annotated with [`MethodImpl`](https://bdleitner.github.io/autoimpl/com/bdl/auto/impl/MethodImpl.html).
+`MethodImpl` has a single `value` parameter that, if present, overrides the default settings
+ from `AutoImpl`.
 
 ## Examples / Use Cases
-#### Adapter Class
+#### Optional Methods
 You've written an interface for which you expect some methods to be frequently implemented with a
 no-op (e.g. various listeners).
 
-    @AutoAdapter
+    @AutoImpl(ImplOptions.RETURN_DEFAULT_VALUE)
     public interface SomeInterface {
       void firstMethod(...);
       void secondMethod(...);
@@ -44,9 +63,9 @@ no-op (e.g. various listeners).
       void umpteenthMethod(...);
     }
 
-Thanks to the `@AutoAdapter` annotation, you can write partial implementations:
+Thanks to the `@AutoImpl` annotation, you can write partial implementations:
 
-    public class PartialImpl extends AutoAdapter_SomeInterface_DefaultValues { // implements SomeInterface
+    public class PartialImpl extends Auto_SomeInterface_Impl { // implements SomeInterface
       void thirdMethod(...) {
         ... // implementation
       }
@@ -62,10 +81,10 @@ and all other methods will simply do nothing when called.
 Suppose you're testing your class's interaction with a library interface for which generating an
 instance is nontrivial.  One approach to solve this is to mock the interface with something like
 *EasyMock* or *Mockito*.  But if you want a partial fake or want the implemented methods to actually 
-perform some logic, an adapter may be simpler:
+perform some logic, a default implementation class may be simpler:
 
     public class SomeTestClass {
-      @AutoAdapter
+      @AutoImpl
       abstract static class MyTestImplementation implements LibraryInterface {
         void doSomething(...) {
            // implementation code
@@ -74,10 +93,11 @@ perform some logic, an adapter may be simpler:
       
       @Test
       public void testDoesSomething() {
-        LibraryInterface impl = new AutoAdapter_SomeTestClass_MyTestImplementation_DefaultValues();
+        LibraryInterface impl = new Auto_SomeTestClass_MyTestImplementation_Impl();
         ... // use this instance for your test.
       }
     }
-If you want to make sure that no other methods are called, you can use the 
-`AutoAdapter_SomeTestClass_MyTestImplementation_Throwing` implementation instead.
+Note: this will throw exceptions if any other method is called.  To avoid that, 
+use `AutoImpl(ImplOptions.RETURN_DEFAULT_VALUE)` or otherwise override the behavior as described
+above.
 
