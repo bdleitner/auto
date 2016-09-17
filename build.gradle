@@ -65,6 +65,12 @@ task jarDocs(type: Jar) {
     from 'build/docs/javadoc/'
 }
 
+task copyDocs(type: Copy) {
+    dependsOn javadoc
+    from 'build/docs'
+    into 'docs'
+}
+
 task copyJars(type: Copy) {
     dependsOn jar, jarSources, jarDocs
     from 'build/libs'
@@ -73,5 +79,5 @@ task copyJars(type: Copy) {
 }
 
 build {
-    dependsOn copyJars
+    dependsOn copyJars, copyDocs
 }
