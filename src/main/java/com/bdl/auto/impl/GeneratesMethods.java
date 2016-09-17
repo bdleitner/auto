@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableList;
  *
  * @author Ben Leitner
  */
-public interface GeneratesMethods {
+interface GeneratesMethods {
 
   ImmutableList<MethodMetadata> getAllMethods();
 

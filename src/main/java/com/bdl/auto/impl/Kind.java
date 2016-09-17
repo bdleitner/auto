@@ -5,7 +5,7 @@ package com.bdl.auto.impl;
  *
  * @author Ben Leitner
  */
-public enum Kind {
+enum Kind {
   /** primitive or boxed numeric types. */
   NUMERIC,
   /** primitive or boxed booleans. */

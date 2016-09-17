@@ -66,6 +66,7 @@ task jarDocs(type: Jar) {
 }
 
 task copyDocs(type: Copy) {
+    delete fileTree(dir: 'docs' )
     dependsOn javadoc
     from 'build/docs/javadoc'
     into 'docs'
