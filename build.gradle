@@ -67,7 +67,7 @@ task jarDocs(type: Jar) {
 
 task copyDocs(type: Copy) {
     dependsOn javadoc
-    from 'build/docs'
+    from 'build/docs/javadoc'
     into 'docs'
 }
 
