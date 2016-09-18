@@ -49,7 +49,7 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
       .setPackageName("java.lang")
       .setName("String")
       .build();
-  private ImmutableSet<String> imports;
+  private ImmutableSet<TypeMetadata> imports;
 
   /** The package in which the type lives. */
   abstract String packageName();
@@ -84,12 +84,12 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
   }
 
   @Override
-  public Set<String> getImports() {
+  public Set<TypeMetadata> getImports() {
     if (imports == null) {
-      ImmutableSet.Builder<String> allImports = ImmutableSet.builder();
+      ImmutableSet.Builder<TypeMetadata> allImports = ImmutableSet.builder();
       if (!isTypeParameter()) {
         // TODO: Remove Nesting Prefix and force qualified class names for inner classes?
-        allImports.add(nameBuilder().addPackagePrefix().addNestingPrefix().addSimpleName().toString());
+        allImports.add(rawType());
       }
       for (TypeMetadata param : params()) {
         allImports.addAll(param.getImports());
@@ -204,6 +204,15 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
     for (TypeMetadata bound : bounds()) {
       builder.addBound(bound.convertTypeParams(paramNameMap));
     }
+    return builder.build();
+  }
+
+  TypeMetadata rawType() {
+    Preconditions.checkState(!isTypeParameter(), "Cannot take the raw type of type parameter %s", this);
+    Builder builder = builder()
+        .setPackageName(packageName())
+        .setName(name());
+    builder.outerClassNamesBuilder().addAll(outerClassNames());
     return builder.build();
   }
 

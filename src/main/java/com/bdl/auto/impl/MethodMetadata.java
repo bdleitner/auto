@@ -86,8 +86,8 @@ abstract class MethodMetadata implements Comparable<MethodMetadata>, GeneratesIm
   }
 
   @Override
-  public Set<String> getImports() {
-    ImmutableSet.Builder<String> imports = ImmutableSet.builder();
+  public Set<TypeMetadata> getImports() {
+    ImmutableSet.Builder<TypeMetadata> imports = ImmutableSet.builder();
     for (TypeMetadata typeParam : typeParameters()) {
       imports.addAll(typeParam.getImports());
     }

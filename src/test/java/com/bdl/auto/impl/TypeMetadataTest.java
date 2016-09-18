@@ -242,10 +242,18 @@ public class TypeMetadataTest {
     TypeMetadata type = TypeMetadata.fromElement(element);
     assertThat(type.getImports())
         .containsExactly(
-            "com.bdl.auto.impl.Parameterized",
-            "com.bdl.auto.impl.ParameterizedMultibound",
-            "com.bdl.auto.impl.Simple");
-
+            TypeMetadata.builder()
+                .setPackageName("com.bdl.auto.impl")
+                .setName("Parameterized")
+                .build(),
+            TypeMetadata.builder()
+                .setPackageName("com.bdl.auto.impl")
+                .setName("ParameterizedMultibound")
+                .build(),
+            TypeMetadata.builder()
+                .setPackageName("com.bdl.auto.impl")
+                .setName("Simple")
+                .build());
   }
 
   @Test

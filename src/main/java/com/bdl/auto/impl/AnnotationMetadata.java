@@ -26,8 +26,8 @@ abstract class AnnotationMetadata implements GeneratesImports {
   abstract ImmutableMap<MethodMetadata, ValueMetadata> values();
 
   @Override
-  public Set<String> getImports() {
-    ImmutableSet.Builder<String> imports = ImmutableSet.builder();
+  public Set<TypeMetadata> getImports() {
+    ImmutableSet.Builder<TypeMetadata> imports = ImmutableSet.builder();
     imports.addAll(type().getImports());
     for (Map.Entry<MethodMetadata, ValueMetadata> entry : values().entrySet()) {
       imports.addAll(entry.getKey().getImports());

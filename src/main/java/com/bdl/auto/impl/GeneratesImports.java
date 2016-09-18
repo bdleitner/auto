@@ -9,5 +9,5 @@ import java.util.Set;
  */
 interface GeneratesImports {
 
-  Set<String> getImports();
+  Set<TypeMetadata> getImports();
 }

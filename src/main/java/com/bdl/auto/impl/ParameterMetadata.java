@@ -31,7 +31,7 @@ abstract class ParameterMetadata implements GeneratesImports {
   }
 
   @Override
-  public Set<String> getImports() {
+  public Set<TypeMetadata> getImports() {
     return type().getImports();
   }
 

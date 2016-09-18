@@ -29,8 +29,8 @@ abstract class ConstructorMetadata implements Comparable<ConstructorMetadata>, G
   abstract ImmutableList<ParameterMetadata> parameters();
 
   @Override
-  public Set<String> getImports() {
-    ImmutableSet.Builder<String> imports = ImmutableSet.builder();
+  public Set<TypeMetadata> getImports() {
+    ImmutableSet.Builder<TypeMetadata> imports = ImmutableSet.builder();
     for (ParameterMetadata param : parameters()) {
       imports.addAll(param.getImports());
     }

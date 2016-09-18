@@ -85,8 +85,8 @@ abstract class ClassMetadata implements GeneratesImports, GeneratesMethods {
   abstract ImmutableList<MethodMetadata> methods();
 
   @Override
-  public Set<String> getImports() {
-    ImmutableSet.Builder<String> imports = ImmutableSet.builder();
+  public Set<TypeMetadata> getImports() {
+    ImmutableSet.Builder<TypeMetadata> imports = ImmutableSet.builder();
     imports.addAll(type().getImports());
     for (InheritanceMetadata inheritance : inheritances()) {
       imports.addAll(inheritance.getImports());

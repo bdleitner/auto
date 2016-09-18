@@ -30,7 +30,7 @@ abstract class InheritanceMetadata implements GeneratesMethods, GeneratesImports
   abstract ClassMetadata classMetadata();
 
   @Override
-  public Set<String> getImports() {
+  public Set<TypeMetadata> getImports() {
     return classMetadata().getImports();
   }
 
