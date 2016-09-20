@@ -216,6 +216,12 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
     return builder.build();
   }
 
+  String getOutermostName() {
+    return outerClassNames().isEmpty()
+        ? name()
+        : outerClassNames().get(outerClassNames().size() - 1);
+  }
+
   @Override
   public String toString() {
     return fullDescription();
@@ -362,6 +368,13 @@ abstract class TypeMetadata implements GeneratesImports, Comparable<TypeMetadata
 
     TypeNameBuilder() {
       nameBuilder = new StringBuilder();
+    }
+
+    TypeNameBuilder addOutermostClassName() {
+      if (!outerClassNames().isEmpty()) {
+        nameBuilder.append(outerClassNames().get(outerClassNames().size() - 1));
+      }
+      return this;
     }
 
     TypeNameBuilder addNestingPrefix(String delimiter) {
