@@ -1,0 +1,61 @@
+package com.bdl.auto.impl.processor;
+
+import javax.annotation.Generated;
+
+/** AutoImpl Generated class for AbstractClass. */
+@Generated("com.bdl.auto.impl.processor.AutoImplProcessor")
+public class Auto_AbstractClass_Impl<A, B extends java.lang.Comparable<B>, C extends java.util.List<B>> extends AbstractClass<A, B, C> {
+
+  public Auto_AbstractClass_Impl(boolean foo) {
+    super(foo);
+  }
+
+  Auto_AbstractClass_Impl(int foo) {
+    super(foo);
+  }
+
+  @Override
+  public int add(int arg0, int arg1) {
+    throw new UnsupportedOperationException("The method \"public int add(int arg0, int arg1)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public B blargh(B arg0) {
+    throw new UnsupportedOperationException("The method \"public B blargh(B arg0)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public void doNothing(java.lang.String arg0) {
+    throw new UnsupportedOperationException("The method \"public void doNothing(java.lang.String arg0)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public <T> T extend(C arg0, T arg1) {
+    throw new UnsupportedOperationException("The method \"public <T> T extend(C arg0, T arg1)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public A extendedFrozzle(A arg0) {
+    throw new UnsupportedOperationException("The method \"public A extendedFrozzle(A arg0)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public <D, E extends java.util.List<D>> com.google.common.collect.ImmutableList<D> filter(E arg0, com.google.common.base.Predicate<D> arg1) {
+    throw new UnsupportedOperationException("The method \"public <D, E extends java.util.List<D>> com.google.common.collect.ImmutableList<D> filter(E arg0, com.google.common.base.Predicate<D> arg1)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public A superExtendedFrozzle(A arg0) {
+    throw new UnsupportedOperationException("The method \"public A superExtendedFrozzle(A arg0)\" is not supported in this implementation.");
+  }
+
+  @Override
+  public java.lang.String thingToString(com.bdl.auto.impl.processor.Thing arg0) {
+    throw new UnsupportedOperationException("The method \"public java.lang.String thingToString(com.bdl.auto.impl.processor.Thing arg0)\" is not supported in this implementation.");
+  }
+
+  @Override
+  protected void voidFromSuper(int arg0) {
+    throw new UnsupportedOperationException("The method \"protected void voidFromSuper(int arg0)\" is not supported in this implementation.");
+  }
+}

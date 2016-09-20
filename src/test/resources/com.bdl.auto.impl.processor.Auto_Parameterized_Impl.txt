@@ -1,0 +1,13 @@
+package com.bdl.auto.impl.processor;
+
+import javax.annotation.Generated;
+
+/** AutoImpl Generated class for Parameterized. */
+@Generated("com.bdl.auto.impl.processor.AutoImplProcessor")
+public class Auto_Parameterized_Impl<T extends Foo> implements Parameterized<T> {
+
+  @Override
+  public T frozzle(T input) {
+    throw new UnsupportedOperationException("The method \"public T frozzle(T input)\" is not supported in this implementation.");
+  }
+}

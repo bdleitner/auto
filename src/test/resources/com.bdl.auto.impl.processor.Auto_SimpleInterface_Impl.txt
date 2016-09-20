@@ -1,0 +1,13 @@
+package com.bdl.auto.impl.processor;
+
+import javax.annotation.Generated;
+
+/** AutoImpl Generated class for SimpleInterface. */
+@Generated("com.bdl.auto.impl.processor.AutoImplProcessor")
+public class Auto_SimpleInterface_Impl implements SimpleInterface {
+
+  @Override
+  public int add(int first, int second) {
+    throw new UnsupportedOperationException("The method \"public int add(int first, int second)\" is not supported in this implementation.");
+  }
+}
