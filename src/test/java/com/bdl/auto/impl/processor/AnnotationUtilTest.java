@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.testing.compile.CompilationRule;
 
+import com.bdl.annotation.processing.model.AnnotationMetadata;
 import com.bdl.auto.impl.AutoImpl;
 import com.bdl.auto.impl.ImplOption;
 

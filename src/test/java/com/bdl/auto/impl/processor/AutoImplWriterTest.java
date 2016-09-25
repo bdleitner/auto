@@ -8,6 +8,13 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import com.google.testing.compile.CompilationRule;
 
+import com.bdl.annotation.processing.model.ClassMetadata;
+import com.bdl.annotation.processing.model.ConstructorMetadata;
+import com.bdl.annotation.processing.model.MethodMetadata;
+import com.bdl.annotation.processing.model.ParameterMetadata;
+import com.bdl.annotation.processing.model.TypeMetadata;
+import com.bdl.annotation.processing.model.Visibility;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -2,6 +2,7 @@ package com.bdl.auto.impl.processor;
 
 import com.google.common.base.Function;
 
+import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.auto.impl.AutoImpl;
 
 import java.io.IOException;

@@ -1,5 +1,7 @@
 package com.bdl.auto.impl.processor;
 
+import com.bdl.annotation.processing.model.TypeMetadata;
+
 /**
  * Container class for types used in testing.
  *

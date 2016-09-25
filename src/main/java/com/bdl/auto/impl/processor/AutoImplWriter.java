@@ -2,12 +2,19 @@ package com.bdl.auto.impl.processor;
 
 import com.google.common.base.Function;
 
+import com.bdl.annotation.processing.model.ClassMetadata;
+import com.bdl.annotation.processing.model.ConstructorMetadata;
+import com.bdl.annotation.processing.model.MethodMetadata;
+import com.bdl.annotation.processing.model.ParameterMetadata;
+import com.bdl.annotation.processing.model.TypeMetadata;
+import com.bdl.annotation.processing.model.Visibility;
 import com.bdl.auto.impl.AutoImpl;
 import com.bdl.auto.impl.ImplOption;
 import com.bdl.auto.impl.MethodImpl;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.stream.Collectors;
 
 /**
  * A class that writes out Auto-implementations.
@@ -35,7 +42,11 @@ class AutoImplWriter {
 
     writeClassOpening(writer, clazz);
 
-    for (ConstructorMetadata constructor : clazz.getOrderedRequiredConstructors()) {
+    for (ConstructorMetadata constructor : clazz.constructors()
+        .stream()
+        .filter((constructorMetadata) -> constructorMetadata.visibility() != Visibility.PRIVATE)
+        .sorted()
+        .collect(Collectors.toList())) {
       writeConstructor(
           writer,
           type.nameBuilder()
@@ -49,8 +60,11 @@ class AutoImplWriter {
     }
 
     AutoImpl autoImpl = AnnotationUtil.autoImpl(clazz);
-    for (MethodMetadata method : clazz.getOrderedRequiredMethods()) {
-      writeMethod(writer, autoImpl, method.toBuilder().setIsAbstract(false).build());
+
+    for (MethodMetadata method : clazz.getAllMethods().stream()
+        .filter(MethodMetadata::isAbstract)
+        .collect(Collectors.toList())) {
+      writeMethod(writer, autoImpl, method.asConcrete());
     }
     writeClassClosing(writer);
 
@@ -59,8 +73,7 @@ class AutoImplWriter {
     }
   }
 
-  private void writeClassOpening(Writer writer, ClassMetadata clazz)
-      throws IOException {
+  private void writeClassOpening(Writer writer, ClassMetadata clazz) throws IOException {
     TypeMetadata type = clazz.type();
     writeLine(writer, "package %s;", type.packageName());
     writeLine(writer, "");
@@ -85,7 +98,10 @@ class AutoImplWriter {
   private void writeConstructor(Writer writer, String name, ConstructorMetadata constructor) throws IOException {
     writeLine(writer, "");
     writeLine(writer, "  %s {", constructor.toString(name));
-    writeLine(writer, "    %s;", constructor.superCall());
+    writeLine(writer, "    super(%s);", constructor.parameters()
+        .stream()
+        .map(ParameterMetadata::name)
+        .collect(Collectors.joining(", ")));
     writeLine(writer, "  }");
   }
 

@@ -4,6 +4,10 @@ import com.google.auto.value.AutoAnnotation;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
+import com.bdl.annotation.processing.model.AnnotationMetadata;
+import com.bdl.annotation.processing.model.ClassMetadata;
+import com.bdl.annotation.processing.model.MethodMetadata;
+import com.bdl.annotation.processing.model.ValueMetadata;
 import com.bdl.auto.impl.AutoImpl;
 import com.bdl.auto.impl.ImplOption;
 import com.bdl.auto.impl.MethodImpl;
