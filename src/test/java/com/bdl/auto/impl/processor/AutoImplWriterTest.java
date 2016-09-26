@@ -215,6 +215,14 @@ public class AutoImplWriterTest {
     assertOutput(metadata);
   }
 
+  @Test
+  public void testInnerClass() throws Exception {
+    TypeElement element = elements.getTypeElement("com.bdl.auto.impl.processor.TopLevel.Outer.Inner");
+    ClassMetadata metadata = ClassMetadata.fromElement(element);
+
+    assertOutput(metadata);
+  }
+
   private void assertOutput(ClassMetadata type) throws Exception {
     final Map<String, Writer> writerMap = Maps.newHashMap();
 

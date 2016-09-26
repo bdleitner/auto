@@ -36,18 +36,13 @@ class AutoImplWriter {
 
   void write(ClassMetadata clazz) throws IOException {
     TypeMetadata type = clazz.type();
-    StringBuilder s = new StringBuilder();
-    if (!type.packageName().isEmpty()) {
-      s.append(type.packageName()).append(".");
-    }
-    s.append("Auto_");
-    if (!type.nestingPrefix("_").isEmpty()) {
-      s.append(type.nestingPrefix("_")).append("_");
-    }
-    s.append(type.name());
-    s.append("_Impl");
 
-    Writer writer = writerFunction.apply(s.toString());
+    Writer writer = writerFunction.apply(
+        type.packagePrefix() +
+            "Auto_" +
+            type.nestingPrefix("_") +
+            type.name() +
+            "_Impl");
 
     ImmutableSet.Builder<TypeMetadata> types = ImmutableSet.builder();
     types.add(clazz.type());
@@ -107,8 +102,8 @@ class AutoImplWriter {
         type.params().isEmpty()
             ? ""
             : "<" + type.params().stream()
-                .map((param) -> param.reference(imports, true))
-                .collect(Collectors.joining(", ")) + ">",
+            .map((param) -> param.reference(imports, true))
+            .collect(Collectors.joining(", ")) + ">",
         clazz.category() == ClassMetadata.Category.CLASS ? "extends" : "implements",
         type.reference(imports));
   }
@@ -130,7 +125,10 @@ class AutoImplWriter {
     writeLine(writer, "  }");
   }
 
-  private void writeMethod(Writer writer, AutoImpl autoImpl, Imports imports, MethodMetadata method) throws IOException {
+  private void writeMethod(Writer writer,
+      AutoImpl autoImpl,
+      Imports imports,
+      MethodMetadata method) throws IOException {
     switch (optionForMethod(autoImpl, method)) {
       case THROW_EXCEPTION:
         writeThrowingMethod(writer, imports, method);

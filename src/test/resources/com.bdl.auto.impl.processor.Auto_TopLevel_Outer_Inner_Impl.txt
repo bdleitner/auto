@@ -1,0 +1,8 @@
+package com.bdl.auto.impl.processor;
+
+import javax.annotation.Generated;
+
+/** AutoImpl Generated class for TopLevel.Outer.Inner. */
+@Generated("com.bdl.auto.impl.processor.AutoImplProcessor")
+public class Auto_TopLevel_Outer_Inner_Impl implements TopLevel.Outer.Inner {
+}

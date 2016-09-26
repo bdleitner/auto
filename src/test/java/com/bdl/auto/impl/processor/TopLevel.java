@@ -1,5 +1,7 @@
 package com.bdl.auto.impl.processor;
 
+import com.bdl.auto.impl.AutoImpl;
+
 /**
  * Nested classes for testing.
  *
@@ -10,7 +12,8 @@ class TopLevel {
 
   static class Outer {
 
-    static class Inner {
+    @AutoImpl
+    interface Inner {
 
     }
   }
