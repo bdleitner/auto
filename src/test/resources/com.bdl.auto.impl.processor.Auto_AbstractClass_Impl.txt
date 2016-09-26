@@ -1,10 +1,13 @@
 package com.bdl.auto.impl.processor;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import javax.annotation.Generated;
 
 /** AutoImpl Generated class for AbstractClass. */
 @Generated("com.bdl.auto.impl.processor.AutoImplProcessor")
-public class Auto_AbstractClass_Impl<A, B extends java.lang.Comparable<B>, C extends java.util.List<B>> extends AbstractClass<A, B, C> {
+public class Auto_AbstractClass_Impl<A, B extends Comparable<B>, C extends List<B>> extends AbstractClass<A, B, C> {
 
   public Auto_AbstractClass_Impl(boolean foo) {
     super(foo);
@@ -25,8 +28,8 @@ public class Auto_AbstractClass_Impl<A, B extends java.lang.Comparable<B>, C ext
   }
 
   @Override
-  public void doNothing(java.lang.String arg0) {
-    throw new UnsupportedOperationException("The method \"public void doNothing(java.lang.String arg0)\" is not supported in this implementation.");
+  public void doNothing(String arg0) {
+    throw new UnsupportedOperationException("The method \"public void doNothing(String arg0)\" is not supported in this implementation.");
   }
 
   @Override
@@ -40,8 +43,8 @@ public class Auto_AbstractClass_Impl<A, B extends java.lang.Comparable<B>, C ext
   }
 
   @Override
-  public <D, E extends java.util.List<D>> com.google.common.collect.ImmutableList<D> filter(E arg0, com.google.common.base.Predicate<D> arg1) {
-    throw new UnsupportedOperationException("The method \"public <D, E extends java.util.List<D>> com.google.common.collect.ImmutableList<D> filter(E arg0, com.google.common.base.Predicate<D> arg1)\" is not supported in this implementation.");
+  public <D, E extends List<D>> ImmutableList<D> filter(E arg0, Predicate<D> arg1) {
+    throw new UnsupportedOperationException("The method \"public <D, E extends List<D>> ImmutableList<D> filter(E arg0, Predicate<D> arg1)\" is not supported in this implementation.");
   }
 
   @Override
@@ -50,8 +53,8 @@ public class Auto_AbstractClass_Impl<A, B extends java.lang.Comparable<B>, C ext
   }
 
   @Override
-  public java.lang.String thingToString(com.bdl.auto.impl.processor.Thing arg0) {
-    throw new UnsupportedOperationException("The method \"public java.lang.String thingToString(com.bdl.auto.impl.processor.Thing arg0)\" is not supported in this implementation.");
+  public String thingToString(Thing arg0) {
+    throw new UnsupportedOperationException("The method \"public String thingToString(Thing arg0)\" is not supported in this implementation.");
   }
 
   @Override

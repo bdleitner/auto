@@ -160,18 +160,21 @@ public class AutoImplWriterTest {
 
   @Test
   public void testHasConstructors() throws Exception {
-    ClassMetadata type = ClassMetadata.builder()
+    TypeMetadata type = TypeMetadata.builder()
+        .setPackageName("com.bdl.auto.impl.processor")
+        .setName("Constructable")
+        .build();
+    ClassMetadata clazz = ClassMetadata.builder()
         .setCategory(ClassMetadata.Category.CLASS)
-        .setType(TypeMetadata.builder()
-            .setPackageName("com.bdl.auto.impl.processor")
-            .setName("Constructable")
-            .build())
+        .setType(type)
         .addConstructor(ConstructorMetadata.builder()
+            .type(type)
             .visibility(Visibility.PUBLIC)
             .addParameter(ParameterMetadata.of(TypeMetadata.INT, "arg1"))
             .addParameter(ParameterMetadata.of(TypeMetadata.STRING, "arg2"))
             .build())
         .addConstructor(ConstructorMetadata.builder()
+            .type(type)
             .visibility(Visibility.PACKAGE_LOCAL)
             .addParameter(ParameterMetadata.of(TypeMetadata.STRING, "arg1"))
             .build())
@@ -193,7 +196,7 @@ public class AutoImplWriterTest {
             .build())
         .build();
 
-    assertOutput(type);
+    assertOutput(clazz);
   }
 
   @Test
@@ -225,14 +228,10 @@ public class AutoImplWriterTest {
           }
         });
 
-    String key = String.format("%s.%s.txt", type.type().packageName(),
-        type.type().nameBuilder()
-        .append("Auto_")
-        .addNestingPrefix("_")
-        .addSimpleName()
-        .append("_")
-        .append("Impl")
-        .toString());
+    String key = String.format("%s.Auto_%s%s_Impl.txt",
+        type.type().packageName(),
+        type.type().nestingPrefix("_"),
+        type.type().name());
     writer.write(type);
 
     URL resource = getClass().getClassLoader().getResource(key);

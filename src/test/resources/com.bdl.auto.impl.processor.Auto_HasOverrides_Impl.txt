@@ -27,8 +27,8 @@ public class Auto_HasOverrides_Impl implements HasOverrides {
   }
 
   @Override
-  public java.lang.Object objectMethod() {
-    throw new UnsupportedOperationException("The method \"public java.lang.Object objectMethod()\" is not supported in this implementation.");
+  public Object objectMethod() {
+    throw new UnsupportedOperationException("The method \"public Object objectMethod()\" is not supported in this implementation.");
   }
 
   @Override
@@ -37,7 +37,7 @@ public class Auto_HasOverrides_Impl implements HasOverrides {
   }
 
   @Override
-  public java.lang.String overriddenStringMethod() {
+  public String overriddenStringMethod() {
     return "";
   }
 
@@ -46,8 +46,8 @@ public class Auto_HasOverrides_Impl implements HasOverrides {
   }
 
   @Override
-  public java.lang.String stringMethod() {
-    throw new UnsupportedOperationException("The method \"public java.lang.String stringMethod()\" is not supported in this implementation.");
+  public String stringMethod() {
+    throw new UnsupportedOperationException("The method \"public String stringMethod()\" is not supported in this implementation.");
   }
 
   @Override

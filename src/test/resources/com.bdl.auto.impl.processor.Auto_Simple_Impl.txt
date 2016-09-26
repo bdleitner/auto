@@ -12,12 +12,12 @@ public class Auto_Simple_Impl extends Simple {
   }
 
   @Override
-  public com.bdl.auto.impl.processor.Thing getThing() {
-    throw new UnsupportedOperationException("The method \"public com.bdl.auto.impl.processor.Thing getThing()\" is not supported in this implementation.");
+  public Thing getThing() {
+    throw new UnsupportedOperationException("The method \"public Thing getThing()\" is not supported in this implementation.");
   }
 
   @Override
-  public java.lang.String repeat(java.lang.String template, int times) {
-    throw new UnsupportedOperationException("The method \"public java.lang.String repeat(java.lang.String template, int times)\" is not supported in this implementation.");
+  public String repeat(String template, int times) {
+    throw new UnsupportedOperationException("The method \"public String repeat(String template, int times)\" is not supported in this implementation.");
   }
 }
