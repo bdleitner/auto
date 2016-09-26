@@ -14,6 +14,7 @@ import com.bdl.auto.impl.MethodImpl;
     numericImpl = ImplOption.RETURN_DEFAULT_VALUE,
     stringImpl = ImplOption.USE_PARENT
 )
+@SuppressWarnings("unused") // Used via compile elements in tests.
 interface HasOverrides {
 
   int intMethod();

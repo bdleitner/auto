@@ -10,6 +10,7 @@ import java.util.List;
  * @author Ben Leitner
  */
 @AutoImpl
+@SuppressWarnings("unused") // Used via elements in tests
 abstract class AbstractClass<A, B extends Comparable<B>, C extends List<B>>
     extends AbstractSuperclass<B>
     implements ExtendedExtendedParameterized<A>, ComplexParameterized<A, B, C>, OtherSimple {
