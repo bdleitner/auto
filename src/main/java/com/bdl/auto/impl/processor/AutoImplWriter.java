@@ -102,10 +102,10 @@ class AutoImplWriter {
         type.params().isEmpty()
             ? ""
             : "<" + type.params().stream()
-            .map((param) -> param.reference(imports, true))
+            .map((param) -> param.toString(imports, true))
             .collect(Collectors.joining(", ")) + ">",
         clazz.category() == ClassMetadata.Category.CLASS ? "extends" : "implements",
-        type.reference(imports));
+        type.toString(imports));
   }
 
   private void writeConstructor(
@@ -139,7 +139,7 @@ class AutoImplWriter {
       default:
         throw new IllegalStateException(
             String.format("Could not determine implementation option for method %s",
-                method.fullDescription(imports)));
+                method.toString(imports)));
     }
   }
 
@@ -175,10 +175,10 @@ class AutoImplWriter {
   private void writeThrowingMethod(Writer writer, Imports imports, MethodMetadata method) throws IOException {
     writeLine(writer, "");
     writeLine(writer, "  @Override");
-    writeLine(writer, "  %s {", method.fullDescription(imports));
+    writeLine(writer, "  %s {", method.toString(imports));
     writeLine(writer,
         "    throw new UnsupportedOperationException(\"The method \\\"%s\\\" is not supported in this implementation.\");",
-        method.fullDescription(imports));
+        method.toString(imports));
     writeLine(writer, "  }");
   }
 
@@ -186,7 +186,7 @@ class AutoImplWriter {
   private void writeDefaultValueMethod(Writer writer, Imports imports, MethodMetadata method) throws IOException {
     writeLine(writer, "");
     writeLine(writer, "  @Override");
-    writeLine(writer, "  %s {", method.fullDescription(imports));
+    writeLine(writer, "  %s {", method.toString(imports));
     if (!method.type().name().equals("void")) {
       writeLine(writer, "    return %s;", getDefaultReturn(method.type()));
     }
