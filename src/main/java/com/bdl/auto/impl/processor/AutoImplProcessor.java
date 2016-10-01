@@ -29,7 +29,7 @@ import javax.tools.JavaFileObject;
  * @author Ben Leitner
  */
 @SupportedAnnotationTypes("com.bdl.auto.impl.AutoImpl")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class AutoImplProcessor extends AbstractProcessor {
 
   private Messager messager;
