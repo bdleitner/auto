@@ -50,9 +50,9 @@ class AnnotationUtil {
     map.put("stringImpl", ImplOption.USE_PARENT);
     map.put("objectImpl", ImplOption.USE_PARENT);
 
-    for (Map.Entry<MethodMetadata, ValueMetadata> entry : metadata.values().entrySet()) {
+    for (Map.Entry<String, ValueMetadata> entry : metadata.values().entrySet()) {
       map.put(
-          entry.getKey().name(),
+          entry.getKey(),
           ImplOption.valueOf(entry.getValue().value()));
     }
     return autoImpl(
@@ -90,8 +90,8 @@ class AnnotationUtil {
     for (AnnotationMetadata annotation : method.annotations()) {
       if (annotation.type().packageName().equals("com.bdl.auto.impl")
         && annotation.type().name().equals("MethodImpl")) {
-        for (Map.Entry<MethodMetadata, ValueMetadata> entry : annotation.values().entrySet()) {
-          if (entry.getKey().name().equals("value")) {
+        for (Map.Entry<String, ValueMetadata> entry : annotation.values().entrySet()) {
+          if (entry.getKey().equals("value")) {
             return methodImpl(ImplOption.valueOf(entry.getValue().value()));
           }
         }

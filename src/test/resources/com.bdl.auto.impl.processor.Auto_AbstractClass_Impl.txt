@@ -53,8 +53,8 @@ public class Auto_AbstractClass_Impl<A, B extends Comparable<B>, C extends List<
   }
 
   @Override
-  public String thingToString(Thing arg0) {
-    throw new UnsupportedOperationException("The method \"public String thingToString(Thing arg0)\" is not supported in this implementation.");
+  public String[] thingToString(Thing arg0) {
+    throw new UnsupportedOperationException("The method \"public String[] thingToString(Thing arg0)\" is not supported in this implementation.");
   }
 
   @Override

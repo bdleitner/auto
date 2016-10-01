@@ -1,6 +1,7 @@
 package com.bdl.auto.impl.processor;
 
 import com.google.common.base.Function;
+import com.google.common.base.Throwables;
 
 import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.auto.impl.AutoImpl;
@@ -73,7 +74,7 @@ public class AutoImplProcessor extends AbstractProcessor {
     } catch (Exception ex) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,
-          ex.getMessage());
+          "Error in AutoImpl Processor\n" + ex.getMessage() + "\n" + Throwables.getStackTraceAsString(ex));
     }
   }
 
