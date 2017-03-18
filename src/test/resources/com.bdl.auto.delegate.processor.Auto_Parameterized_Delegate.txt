@@ -1,0 +1,27 @@
+package com.bdl.auto.delegate.processor;
+
+import javax.annotation.Generated;
+
+/** AutoDelegate Generated class for Parameterized. */
+@Generated("com.bdl.auto.delegate.processor.AutoDelegateProcessor")
+class Auto_Parameterized_Delegate extends Parameterized {
+
+  protected Auto_Parameterized_Delegate(ParameterizedInherited<Long> delegate) {
+    super(delegate);
+  }
+
+  @Override
+  public int bar(int arg0) {
+    return delegate.bar(arg0);
+  }
+
+  @Override
+  public void foo() {
+    delegate.foo();
+  }
+
+  @Override
+  public Long frumple() {
+    return delegate.frumple();
+  }
+}

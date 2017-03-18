@@ -1,0 +1,31 @@
+package com.bdl.auto.delegate.processor;
+
+import javax.annotation.Generated;
+
+/** AutoDelegate Generated class for Simple. */
+@Generated("com.bdl.auto.delegate.processor.AutoDelegateProcessor")
+class Auto_Simple_Delegate extends Simple {
+
+  protected Auto_Simple_Delegate(Inherited delegate) {
+    super(delegate);
+  }
+
+  protected Auto_Simple_Delegate(Inherited delegate, int other) {
+    super(delegate, other);
+  }
+
+  @Override
+  public int bar(int arg0) {
+    return delegate.bar(arg0);
+  }
+
+  @Override
+  public void foo() {
+    delegate.foo();
+  }
+
+  @Override
+  public String frumple() {
+    return delegate.frumple();
+  }
+}

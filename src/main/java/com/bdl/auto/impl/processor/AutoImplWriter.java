@@ -1,8 +1,5 @@
 package com.bdl.auto.impl.processor;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
-
 import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.annotation.processing.model.ConstructorMetadata;
 import com.bdl.annotation.processing.model.Imports;
@@ -13,13 +10,14 @@ import com.bdl.annotation.processing.model.Visibility;
 import com.bdl.auto.impl.AutoImpl;
 import com.bdl.auto.impl.ImplOption;
 import com.bdl.auto.impl.MethodImpl;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.Generated;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.annotation.Generated;
 
 /**
  * A class that writes out Auto-implementations.
@@ -48,7 +46,7 @@ class AutoImplWriter {
     types.add(clazz.type());
     types.add(TypeMetadata.from(Generated.class));
     List<MethodMetadata> methods = clazz.getAllMethods().stream()
-        .filter(MethodMetadata::isAbstract)
+        .filter(method -> method.modifiers().isAbstract())
         .sorted()
         .collect(Collectors.toList());
     for (MethodMetadata method : methods) {

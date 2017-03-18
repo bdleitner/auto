@@ -1,33 +1,31 @@
 package com.bdl.auto.impl.processor;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import com.bdl.annotation.processing.model.ClassMetadata;
+import com.bdl.annotation.processing.model.ConstructorMetadata;
+import com.bdl.annotation.processing.model.MethodMetadata;
+import com.bdl.annotation.processing.model.Modifiers;
+import com.bdl.annotation.processing.model.ParameterMetadata;
+import com.bdl.annotation.processing.model.TypeMetadata;
+import com.bdl.annotation.processing.model.Visibility;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import com.google.testing.compile.CompilationRule;
-
-import com.bdl.annotation.processing.model.ClassMetadata;
-import com.bdl.annotation.processing.model.ConstructorMetadata;
-import com.bdl.annotation.processing.model.MethodMetadata;
-import com.bdl.annotation.processing.model.ParameterMetadata;
-import com.bdl.annotation.processing.model.TypeMetadata;
-import com.bdl.annotation.processing.model.Visibility;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Map;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Tests for the {@linkplain AutoImplWriter} class.
@@ -56,8 +54,7 @@ public class AutoImplWriterTest {
             .build())
         .addMethod(
             MethodMetadata.builder()
-                .setVisibility(Visibility.PUBLIC)
-                .setIsAbstract(true)
+                .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
                 .setType(TypeMetadata.INT)
                 .setName("add")
                 .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
@@ -65,8 +62,7 @@ public class AutoImplWriterTest {
                 .build())
         .addMethod(
             MethodMetadata.builder()
-                .setVisibility(Visibility.PUBLIC)
-                .setIsAbstract(true)
+                .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
                 .setType(TypeMetadata.STRING)
                 .setName("repeat")
                 .addParameter(ParameterMetadata.of(TypeMetadata.STRING, "template"))
@@ -74,8 +70,7 @@ public class AutoImplWriterTest {
                 .build())
         .addMethod(
             MethodMetadata.builder()
-                .setVisibility(Visibility.PUBLIC)
-                .setIsAbstract(true)
+                .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
                 .setType(TestingTypes.THING)
                 .setName("getThing")
                 .build())
@@ -94,8 +89,7 @@ public class AutoImplWriterTest {
             .build())
         .addMethod(
             MethodMetadata.builder()
-                .setVisibility(Visibility.PUBLIC)
-                .setIsAbstract(true)
+                .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
                 .setType(TypeMetadata.INT)
                 .setName("add")
                 .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
@@ -117,8 +111,7 @@ public class AutoImplWriterTest {
             .build())
         .addMethod(
             MethodMetadata.builder()
-                .setVisibility(Visibility.PUBLIC)
-                .setIsAbstract(true)
+                .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
                 .setType(TestingTypes.PARAM_T)
                 .setName("frozzle")
                 .addParameter(ParameterMetadata.of(TestingTypes.PARAM_T, "input"))
@@ -131,15 +124,14 @@ public class AutoImplWriterTest {
   @Test
   public void testHasAnImplementedMethod() throws Exception {
     MethodMetadata addMethod = MethodMetadata.builder()
-        .setVisibility(Visibility.PUBLIC)
+        .setModifiers(Modifiers.visibility(Visibility.PUBLIC))
         .setType(TypeMetadata.INT)
         .setName("add")
         .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
         .addParameter(ParameterMetadata.of(TypeMetadata.INT, "second"))
         .build();
     MethodMetadata subtractMethod = MethodMetadata.builder()
-        .setVisibility(Visibility.PUBLIC)
-        .setIsAbstract(true)
+        .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
         .setType(TypeMetadata.INT)
         .setName("subtract")
         .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
@@ -179,16 +171,14 @@ public class AutoImplWriterTest {
             .addParameter(ParameterMetadata.of(TypeMetadata.STRING, "arg1"))
             .build())
         .addMethod(MethodMetadata.builder()
-            .setVisibility(Visibility.PUBLIC)
-            .setIsAbstract(true)
+            .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
             .setType(TypeMetadata.INT)
             .setName("add")
             .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
             .addParameter(ParameterMetadata.of(TypeMetadata.INT, "second"))
             .build())
         .addMethod(MethodMetadata.builder()
-            .setVisibility(Visibility.PUBLIC)
-            .setIsAbstract(true)
+            .setModifiers(Modifiers.visibility(Visibility.PUBLIC).makeAbstract())
             .setType(TypeMetadata.INT)
             .setName("subtract")
             .addParameter(ParameterMetadata.of(TypeMetadata.INT, "first"))
