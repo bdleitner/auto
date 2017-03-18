@@ -1,1 +1,5 @@
-rootProject.name = 'auto'
+rootProject.name = 'bdl-auto'
+
+include 'auto'
+include 'impl_annotation_processor'
+include 'delegate_annotation_processor'

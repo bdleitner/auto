@@ -1,0 +1,6 @@
+dependencies {
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile project(':delegate_annotation_processor')
+    testApt project(':impl_annotation_processor')
+    testApt project(':delegate_annotation_processor')
+}
