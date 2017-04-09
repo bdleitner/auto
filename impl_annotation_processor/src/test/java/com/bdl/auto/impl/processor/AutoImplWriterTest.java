@@ -1,5 +1,13 @@
 package com.bdl.auto.impl.processor;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import com.google.common.io.Resources;
+import com.google.testing.compile.CompilationRule;
+
 import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.annotation.processing.model.ConstructorMetadata;
 import com.bdl.annotation.processing.model.MethodMetadata;
@@ -7,25 +15,20 @@ import com.bdl.annotation.processing.model.Modifiers;
 import com.bdl.annotation.processing.model.ParameterMetadata;
 import com.bdl.annotation.processing.model.TypeMetadata;
 import com.bdl.annotation.processing.model.Visibility;
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-import com.google.common.io.Resources;
-import com.google.testing.compile.CompilationRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Map;
 
-import static com.google.common.truth.Truth.assertThat;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 /**
  * Tests for the {@linkplain AutoImplWriter} class.
@@ -243,7 +246,12 @@ public class AutoImplWriterTest {
                 return writer;
               }
             },
-            s -> {});
+            new AutoImplWriter.Recorder() {
+              @Override
+              public void record(String s) {
+                // ignore
+              }
+            });
 
     String key =
         String.format(

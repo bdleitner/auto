@@ -1,5 +1,12 @@
 package com.bdl.auto.impl.processor;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
+
 import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.annotation.processing.model.ConstructorMetadata;
 import com.bdl.annotation.processing.model.Imports;
@@ -10,15 +17,13 @@ import com.bdl.annotation.processing.model.Visibility;
 import com.bdl.auto.impl.AutoImpl;
 import com.bdl.auto.impl.ImplOption;
 import com.bdl.auto.impl.MethodImpl;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
 
-import javax.annotation.Generated;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+
+import javax.annotation.Generated;
+import javax.annotation.Nullable;
 
 /**
  * A class that writes out Auto-implementations.
@@ -27,17 +32,21 @@ import java.util.stream.Collectors;
  */
 class AutoImplWriter {
 
+  interface Recorder {
+    void record(String s);
+  }
+  
   private final Function<String, Writer> writerFunction;
-  private final Consumer<String> log;
+  private final Recorder log;
 
-  protected AutoImplWriter(Function<String, Writer> writerFunction, Consumer<String> log) {
+  protected AutoImplWriter(Function<String, Writer> writerFunction, Recorder log) {
     this.writerFunction = writerFunction;
     this.log = log;
   }
 
   void write(ClassMetadata clazz) throws IOException {
     TypeMetadata type = clazz.type();
-    log.accept(String.format("Writing AutoImpl class for %s", type.fullyQualifiedPathName()));
+    log.record(String.format("Writing AutoImpl class for %s", type.fullyQualifiedPathName()));
     Writer writer = writerFunction.apply(
         type.packagePrefix() +
             "Auto_" +
@@ -48,19 +57,25 @@ class AutoImplWriter {
     ImmutableSet.Builder<TypeMetadata> types = ImmutableSet.builder();
     types.add(clazz.type());
     types.add(TypeMetadata.from(Generated.class));
-    List<MethodMetadata> methods = clazz.getAllMethods().stream()
-        .filter(method -> method.modifiers().isAbstract())
-        .sorted()
-        .collect(Collectors.toList());
+    final List<MethodMetadata> methods = FluentIterable.from(clazz.getAllMethods())
+        .filter(new Predicate<MethodMetadata>() {
+          @Override
+          public boolean apply(@Nullable MethodMetadata input) {
+            return input.modifiers().isAbstract();
+          }
+        }).toSortedList(Ordering.natural());
+
     for (MethodMetadata method : methods) {
       types.addAll(method.getAllTypes());
     }
 
-    List<ConstructorMetadata> constructors = clazz.constructors()
-        .stream()
-        .filter((constructorMetadata) -> constructorMetadata.visibility() != Visibility.PRIVATE)
-        .sorted()
-        .collect(Collectors.toList());
+    List<ConstructorMetadata> constructors = FluentIterable.from(clazz.constructors())
+        .filter(new Predicate<ConstructorMetadata>() {
+          @Override
+          public boolean apply(@Nullable ConstructorMetadata input) {
+            return input.visibility() != Visibility.PRIVATE;
+          }
+        }).toSortedList(Ordering.<ConstructorMetadata>natural());
 
     for (ConstructorMetadata constructor : constructors) {
       types.addAll(constructor.getAllTypes());
@@ -87,7 +102,7 @@ class AutoImplWriter {
     }
   }
 
-  private void writeClassOpening(Writer writer, ClassMetadata clazz, Imports imports) throws IOException {
+  private void writeClassOpening(Writer writer, ClassMetadata clazz, final Imports imports) throws IOException {
     TypeMetadata type = clazz.type();
     writeLine(writer, "package %s;", type.packageName());
     writeLine(writer, "");
@@ -102,27 +117,41 @@ class AutoImplWriter {
         type.name(),
         type.params().isEmpty()
             ? ""
-            : "<" + type.params().stream()
-            .map((param) -> param.toString(imports, true))
-            .collect(Collectors.joining(", ")) + ">",
+            : "<" + Joiner.on(", ").join(FluentIterable.from(type.params())
+                .transform(new Function<TypeMetadata, String>() {
+                  @Nullable
+                  @Override
+                  public String apply(@Nullable TypeMetadata input) {
+                    return input.toString(imports, true);
+                  }
+                })) + ">",
         clazz.category() == ClassMetadata.Category.CLASS ? "extends" : "implements",
         type.toString(imports));
   }
 
   private void writeConstructor(
-      Writer writer, Imports imports, ConstructorMetadata constructor) throws IOException {
+      Writer writer, final Imports imports, ConstructorMetadata constructor) throws IOException {
     writeLine(writer, "");
     writeLine(writer, "  %sAuto_%s%s_Impl(%s) {",
         constructor.visibility().prefix(),
         constructor.type().nestingPrefix("_"),
         constructor.type().name(),
-        constructor.parameters().stream()
-            .map((param) -> param.toString(imports))
-            .collect(Collectors.joining(", ")));
-    writeLine(writer, "    super(%s);", constructor.parameters()
-        .stream()
-        .map(ParameterMetadata::name)
-        .collect(Collectors.joining(", ")));
+        Joiner.on(", ").join(FluentIterable.from(constructor.parameters())
+            .transform(new Function<ParameterMetadata, String>() {
+              @Nullable
+              @Override
+              public String apply(@Nullable ParameterMetadata input) {
+                return input.toString(imports);
+              }
+            })));
+    writeLine(writer, "    super(%s);", Joiner.on(", ").join(FluentIterable.from(constructor.parameters())
+        .transform(new Function<ParameterMetadata, String>() {
+          @Nullable
+          @Override
+          public String apply(@Nullable ParameterMetadata input) {
+            return input.name();
+          }
+        })));
     writeLine(writer, "  }");
   }
 

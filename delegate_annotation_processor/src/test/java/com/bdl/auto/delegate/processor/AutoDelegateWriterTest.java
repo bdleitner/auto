@@ -1,24 +1,27 @@
 package com.bdl.auto.delegate.processor;
 
-import com.bdl.annotation.processing.model.ClassMetadata;
+import static com.google.common.truth.Truth.assertThat;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import com.google.testing.compile.CompilationRule;
+
+import com.bdl.annotation.processing.model.ClassMetadata;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.lang.model.util.Elements;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Map;
 
-import static com.google.common.truth.Truth.assertThat;
+import javax.lang.model.util.Elements;
 
 /**
  * Tests for the {@linkplain AutoDelegateWriter} class.
@@ -73,7 +76,12 @@ public class AutoDelegateWriterTest {
                 writerMap.put(input + ".txt", writer);
                 return writer;
               }
-            }, s -> {});
+            }, new AutoDelegateWriter.Recorder() {
+          @Override
+          public void record(String s) {
+            // Ignore
+          }
+        });
 
     String key =
         String.format(

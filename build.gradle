@@ -28,11 +28,11 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'net.ltgt.apt'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
     ext {
-        JUNIT_VERSION = '4.2'
+        JUNIT_VERSION = '4.12'
         GOOGLE_TRUTH_VERSION = '0.32'
     }
 

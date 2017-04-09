@@ -1,5 +1,11 @@
 package com.bdl.auto.delegate.processor;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.base.Throwables;
+import com.google.common.collect.FluentIterable;
+
 import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.annotation.processing.model.ConstructorMetadata;
 import com.bdl.annotation.processing.model.FieldMetadata;
@@ -7,9 +13,12 @@ import com.bdl.annotation.processing.model.InheritanceMetadata;
 import com.bdl.annotation.processing.model.TypeMetadata;
 import com.bdl.annotation.processing.model.Visibility;
 import com.bdl.auto.delegate.AutoDelegate;
-import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -23,10 +32,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Annotation Processor to generate AutoDelegate classes.
@@ -34,7 +39,7 @@ import java.util.stream.Collectors;
  * @author Ben Leitner
  */
 @SupportedAnnotationTypes("com.bdl.auto.delegate.AutoDelegate")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class AutoDelegateProcessor extends AbstractProcessor {
 
   private Messager messager;
@@ -64,7 +69,7 @@ public class AutoDelegateProcessor extends AbstractProcessor {
     return true;
   }
 
-  private void processElement(TypeElement element) {
+  private void processElement(final TypeElement element) {
     ClassMetadata classMetadata = ClassMetadata.fromElement(element);
 
     if (!validate(classMetadata)) {
@@ -75,7 +80,12 @@ public class AutoDelegateProcessor extends AbstractProcessor {
       JavaFileObjectWriterFunction writerFunction = new JavaFileObjectWriterFunction(processingEnv);
 
       AutoDelegateWriter writer = new AutoDelegateWriter(writerFunction,
-          s -> messager.printMessage(Diagnostic.Kind.NOTE, s, element));
+          new AutoDelegateWriter.Recorder() {
+            @Override
+            public void record(String s) {
+              messager.printMessage(Diagnostic.Kind.NOTE, s, element);
+            }
+          });
       writer.write(classMetadata);
     } catch (Exception ex) {
       messager.printMessage(
@@ -99,17 +109,13 @@ public class AutoDelegateProcessor extends AbstractProcessor {
    * </ul>
    */
   private boolean validate(ClassMetadata classMetadata) {
-    Set<InheritanceMetadata> inheritances =
-        classMetadata
-            .inheritances()
-            .stream()
-            .filter(
-                inheritance ->
-                    !inheritance
-                        .classMetadata()
-                        .fullyQualifiedPathName()
-                        .equals("java.lang.Object"))
-            .collect(Collectors.toSet());
+    Set<InheritanceMetadata> inheritances = FluentIterable.from(classMetadata.inheritances())
+        .filter(new Predicate<InheritanceMetadata>() {
+          @Override
+          public boolean apply(@Nullable InheritanceMetadata input) {
+            return !input.classMetadata().fullyQualifiedPathName().equals("java.lang.Object");
+          }
+        }).toSet();
     if (inheritances.size() != 1) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,
@@ -118,15 +124,18 @@ public class AutoDelegateProcessor extends AbstractProcessor {
                   + "AutoDelegate classes must implement a single interface"
                   + " or extend a single class: was %s",
               classMetadata.type().name(),
-              inheritances
-                  .stream()
-                  .map(inheritance -> inheritance.classMetadata().fullyQualifiedPathName())
-                  .collect(Collectors.joining(", "))));
+              Joiner.on(", ").join(FluentIterable.from(inheritances).transform(new Function<InheritanceMetadata, String>() {
+                @Nullable
+                @Override
+                public String apply(@Nullable InheritanceMetadata input) {
+                  return input.classMetadata().fullyQualifiedPathName();
+                }
+              }))));
       return false;
     }
-    TypeMetadata inheritedType = inheritances.stream().findAny().get().classMetadata().type();
+    final TypeMetadata inheritedType = FluentIterable.from(inheritances).first().get().classMetadata().type();
 
-    if (classMetadata.fields().stream().noneMatch(field -> fieldMatches(field, inheritedType))) {
+    if (noDelegateField(classMetadata, inheritedType)) {
       messager.printMessage(
           Diagnostic.Kind.ERROR,
           String.format(
@@ -147,6 +156,15 @@ public class AutoDelegateProcessor extends AbstractProcessor {
       }
     }
     return true;
+  }
+
+  private boolean noDelegateField(ClassMetadata classMetadata, final TypeMetadata inheritedType) {
+    return !FluentIterable.from(classMetadata.fields()).anyMatch(new Predicate<FieldMetadata>() {
+      @Override
+      public boolean apply(@Nullable FieldMetadata input) {
+        return fieldMatches(input, inheritedType);
+      }
+    });
   }
 
   private boolean fieldMatches(FieldMetadata field, TypeMetadata inheritedType) {

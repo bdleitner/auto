@@ -1,9 +1,14 @@
 package com.bdl.auto.impl.processor;
 
-import com.bdl.annotation.processing.model.ClassMetadata;
-import com.bdl.auto.impl.AutoImpl;
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
+
+import com.bdl.annotation.processing.model.ClassMetadata;
+import com.bdl.auto.impl.AutoImpl;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -18,9 +23,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Set;
 
 /**
  * Annotation Processor to generate AutoImpl classes.
@@ -28,7 +30,7 @@ import java.util.Set;
  * @author Ben Leitner
  */
 @SupportedAnnotationTypes("com.bdl.auto.impl.AutoImpl")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class AutoImplProcessor extends AbstractProcessor {
 
   private Messager messager;
@@ -67,7 +69,12 @@ public class AutoImplProcessor extends AbstractProcessor {
     try {
       JavaFileObjectWriterFunction writerFunction = new JavaFileObjectWriterFunction(processingEnv);
 
-      AutoImplWriter writer = new AutoImplWriter(writerFunction, s -> messager.printMessage(Diagnostic.Kind.NOTE, s));
+      AutoImplWriter writer = new AutoImplWriter(writerFunction, new AutoImplWriter.Recorder() {
+        @Override
+        public void record(String s) {
+          messager.printMessage(Diagnostic.Kind.NOTE, s);
+        }
+      });
       writer.write(classMetadata);
     } catch (Exception ex) {
       messager.printMessage(
