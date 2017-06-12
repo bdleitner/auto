@@ -8,6 +8,9 @@ import java.lang.annotation.Target;
 /**
  * Indicates that a class should have a concrete implementation class generated for it.
  *
+ * TODO: Make this annotation have SOURCE-retention.  Combine the annnotations and processor
+ * into one dependency that can be compileOnly/apt
+ *
  * @author Ben Leitner
  */
 @Retention(RetentionPolicy.CLASS)
