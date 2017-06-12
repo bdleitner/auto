@@ -1,4 +1,4 @@
 dependencies {
-    compile 'com.github.bdleitner:common-annotation-processing:0.4.1'
+    compile 'com.github.bdleitner:common-annotation-processing:0.4.2'
     compile(project(':auto')) { transitive = false }
 }
