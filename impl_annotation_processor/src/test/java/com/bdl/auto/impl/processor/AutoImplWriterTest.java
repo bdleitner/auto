@@ -2,12 +2,6 @@ package com.bdl.auto.impl.processor;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-import com.google.common.io.Resources;
-import com.google.testing.compile.CompilationRule;
-
 import com.bdl.annotation.processing.model.ClassMetadata;
 import com.bdl.annotation.processing.model.ConstructorMetadata;
 import com.bdl.annotation.processing.model.MethodMetadata;
@@ -15,20 +9,22 @@ import com.bdl.annotation.processing.model.Modifiers;
 import com.bdl.annotation.processing.model.ParameterMetadata;
 import com.bdl.annotation.processing.model.TypeMetadata;
 import com.bdl.annotation.processing.model.Visibility;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import com.google.common.io.Resources;
+import com.google.testing.compile.CompilationRule;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.util.Map;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.util.Map;
-
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 /**
  * Tests for the {@linkplain AutoImplWriter} class.
@@ -262,6 +258,10 @@ public class AutoImplWriterTest {
     URL resource = getClass().getClassLoader().getResource(key);
     String file = Resources.toString(resource, Charsets.UTF_8);
 
-    assertThat(writerMap.get(key).toString()).isEqualTo(file);
+    assertThat(normalize(writerMap.get(key).toString())).isEqualTo(normalize(file));
+  }
+
+  private static String normalize(String input) {
+    return input.replace("\r\n", "\n");
   }
 }
